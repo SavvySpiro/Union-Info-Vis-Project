@@ -1,0 +1,5 @@
+plotly
+dash
+dash-bootstrap-components
+pdf2image
+#  for pdf conversion code, also need poppler-uti

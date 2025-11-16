@@ -17,10 +17,10 @@ List of Unions spreadsheet: https://docs.google.com/spreadsheets/d/1JQmKm9AMQQ_d
 
 ## Tasks:
 
-- [ ] Dashboard set up
-    - [ ] Contract loaded as background
-    - [ ] Pop-ups working, showing visualization
-    - [ ] Pop-ups linked to correct spots in pdf
+- [x] Dashboard set up
+    - [x] Contract loaded as background
+    - [x] Pop-ups working, showing visualization
+    - [x] Pop-ups linked to correct spots in pdf
 - [ ] Inflation Vs. Stipend increases
     - [ ] Title
     - [ ] Subtitle

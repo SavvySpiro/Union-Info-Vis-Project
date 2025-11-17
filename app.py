@@ -8,23 +8,22 @@ import utils
 
 # local
 from livingwage_vs_stipend import livingwage_vs_stipend
-# from inflation_vs_raises import compare_inflation_and_raises
 from department_stipend_avgs import department_stipend_avgs
 from timeline_dash import timeline
 
-# Create figures to be displayed
-fig_stipends_over_time = livingwage_vs_stipend()
-# fig_inflation = compare_inflation_and_raises()
-fig_dept_avg = department_stipend_avgs()
-fig_timeline = timeline()
-fallback_fig = px.scatter(x=[1,2,3], y=[1,2,3], title="You should not be seeing this, something went wrong")
+# Create HTML content and get callbacks
+html_stipends_over_time, callbacks_stipends = livingwage_vs_stipend()
+html_dept_avg, callbacks_dept = department_stipend_avgs()
+html_timeline, callbacks_timeline = timeline()
 
-pdf_link_mapping = {
-    "hot-0-0": fig_stipends_over_time,
-    "hot-0-1": fig_dept_avg, #temp
-    "hot-1-0": fig_dept_avg,
-    "hot-2-0": fig_timeline
-    # add more mappings as needed
+fallback_html = html.Div("You should not be seeing this, something went wrong")
+
+# Map hotspots to their content and callbacks
+content_mapping = {
+    "hot-0-0": {"html": html_stipends_over_time, "callbacks": callbacks_stipends},
+    "hot-0-1": {"html": html_dept_avg, "callbacks": callbacks_dept},
+    "hot-1-0": {"html": html_dept_avg, "callbacks": callbacks_dept},
+    "hot-2-0": {"html": html_timeline, "callbacks": callbacks_timeline}
 }
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -39,36 +38,30 @@ pdf_images = [
     if filename.lower().endswith((".png", ".jpg", ".jpeg"))
 ]
 
-
 def serve_image(path):
     with open(path, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
     return f"data:image/png;base64,{encoded}"
 
-
 # ----------------------------------------------------------------
 # 2. Define hotspots (clickable regions)
 # ----------------------------------------------------------------
-# For now these are placeholder boxes. You will fill in real locations later.
-# hotspot_dict[page_index] = list of hotspot coordinate dicts
 hotspot_dict = {
-    0: [  # page 0 hotspots
+    0: [
         {"top": 300, "left": 120, "width": 250, "height": 40, "id": "hot-0-0"},
         {"top": 550, "left": 150, "width": 220, "height": 35, "id": "hot-0-1"},
     ],
-    1: [  # page 1 hotspots
+    1: [
         {"top": 200, "left": 100, "width": 300, "height": 50, "id": "hot-1-0"},
     ],
-    2: [  # page 2 hotspots
+    2: [
         {"top": 200, "left": 100, "width": 300, "height": 50, "id": "hot-2-0"},
     ],
-    # add more pages when ready
 }
 
 # FIGURE CONSISTENCY VERIFICATION
-# test that all figures have a place to be and
 try: 
-    utils.verify_figure_mappings(pdf_link_mapping, hotspot_dict)
+    utils.verify_content_mappings(content_mapping, hotspot_dict)
 except ValueError as e:
     print(f"\n❌ ERROR: {e}")
 
@@ -77,10 +70,8 @@ except ValueError as e:
 # ----------------------------------------------------------------
 def build_page_with_overlays(img_src, page_index):
     """Create one PDF page (an image) with its overlay hotspots."""
-
     return html.Div(
         [
-            # The PDF image
             html.Img(
                 src=img_src,
                 style={
@@ -88,7 +79,6 @@ def build_page_with_overlays(img_src, page_index):
                     "display": "block",
                 },
             ),
-            # Overlay hotspots for this page
             *[
                 html.Div(
                     id=hotspot["id"],
@@ -100,7 +90,7 @@ def build_page_with_overlays(img_src, page_index):
                         "width": f"{hotspot['width']}px",
                         "height": f"{hotspot['height']}px",
                         "cursor": "pointer",
-                        "backgroundColor": "rgba(255, 255, 0, 0.3)",  # highlight
+                        "backgroundColor": "rgba(255, 255, 0, 0.3)",
                         "border": "2px solid rgba(255,200,0,0.4)",
                     },
                 )
@@ -109,11 +99,10 @@ def build_page_with_overlays(img_src, page_index):
         ],
         style={
             "position": "relative",
-            "width": "70%",       # match your desired PDF width
+            "width": "70%",
             "margin": "20px auto",
         },
     )
-
 
 app.layout = html.Div(
     [
@@ -131,12 +120,12 @@ app.layout = html.Div(
             },
         ),
 
-        # Popup modal (same for all hotspots)
+        # Popup modal - now contains a Div instead of a Graph
         dbc.Modal(
             [
                 dbc.ModalHeader(dbc.ModalTitle("Visualization")),
                 dbc.ModalBody(
-                    dcc.Graph(id="popup-figure")
+                    html.Div(id="popup-content"),  # Changed from dcc.Graph
                 ),
                 dbc.ModalFooter(
                     dbc.Button("Close", id="close-popup", n_clicks=0)
@@ -151,14 +140,12 @@ app.layout = html.Div(
     style={"height": "100vh", "overflow": "hidden"},
 )
 
-
 # ----------------------------------------------------------------
 # 4. Callback: any hotspot opens the popup
 # ----------------------------------------------------------------
-
 @app.callback(
     Output("popup-modal", "is_open"),
-    Output("popup-figure", "figure"),
+    Output("popup-content", "children"),
     [
         Input(hotspot["id"], "n_clicks")
         for page in hotspot_dict.values()
@@ -176,13 +163,25 @@ def open_popup(*args):
     if triggered_id == "close-popup":
         return False, no_update
 
-    # If a hotspot was clicked, look up the figure
+    # If a hotspot was clicked, look up the HTML content
     if triggered_id.startswith("hot-"):
-        fig_to_show = pdf_link_mapping.get(triggered_id, fallback_fig)  # fallback figure
-        return True, fig_to_show
+        content = content_mapping.get(triggered_id, {"html": fallback_html})
+        return True, content["html"]
 
     return no_update, no_update
 
+# ----------------------------------------------------------------
+# 5. Register all callbacks from the visualization functions
+# ----------------------------------------------------------------
+def register_callbacks():
+    """Register all callbacks from the visualization modules."""
+    for hotspot_id, content in content_mapping.items():
+        if content["callbacks"]:
+            for callback_func in content["callbacks"]:
+                callback_func(app)
+
+# Register all callbacks after app layout is defined
+register_callbacks()
 
 # ----------------------------------------------------------------
 

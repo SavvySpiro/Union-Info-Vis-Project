@@ -149,6 +149,7 @@ def time_changes_table(negotiations, article, date):
     fig.update_layout(
         title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}", width=40))
     )
+    fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
     
     return fig
 
@@ -189,7 +190,10 @@ def time_changes_bars(negotiations, article):
     
     # Legend is labeled with total number of changes
     fig.update_legends(
-        title_text = f"Total changes: {int(subset['Change Count'].sum())}"
+        title_text = f"Total changes: {int(subset['Change Count'].sum())}",
+        orientation = "h",
+        yanchor = "bottom",
+        y = .99
     )
     return fig
     

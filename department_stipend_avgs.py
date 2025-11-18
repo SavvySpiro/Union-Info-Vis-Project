@@ -5,7 +5,15 @@ import utils
 
 
 def department_stipend_avgs():
-    """Analyze and visualize department stipend averages over time for Northeastern University."""
+    """
+    Creates Dash div and callbacks for the department stipend comparison line chart
+    Analyze and visualize department stipend averages over time for Northeastern University.
+    This is the function that gets imported into app.py
+
+    Returns:
+        html.Div: html code for the Dash layout
+        callbacks: functions for interactivity (not currently used)
+    """
     # Load data
     stipends = pd.read_csv("data/boston_stipends.csv")
     
@@ -73,6 +81,5 @@ def department_stipend_avgs():
         html.H3("Northeastern University Department Stipend Averages Over Time"),
         dcc.Graph(figure=neu_stipends_time)
     ])
-
     
     return layout , [] # No callbacks for this component]

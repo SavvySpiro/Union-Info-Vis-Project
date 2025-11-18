@@ -3,6 +3,15 @@ import plotly.express as px
 from dash import html, dcc
 
 def livingwage_vs_stipend():
+    """
+    Creates Dash div and callbacks for the living wage comparison line chart
+    Compares 6 Boston-area universities between 2013 and 2025
+    This is the function that gets imported into app.py
+
+    Returns:
+        html.Div: html code for the Dash layout
+        callbacks: functions for interactivity (not currently used)
+    """
 
     stipends = pd.read_csv("data/boston_stipends.csv")
     

@@ -13,16 +13,17 @@ def timeline_data():
     negotiations = pd.read_csv("data/contract_negotiations.csv")
     negotiations["Start Date"] = pd.to_datetime(negotiations["Date"])
     
-    # Sort negotiations by date to ensure proper ordering
+    # Sort negotiations by article and date to ensure proper ordering
     negotiations = negotiations.sort_values(["Article", "Start Date"])
     
     # Add "end" date for each timeline segment
-    def next_end(df, article, start):
+    def next_end(df:pd.DataFrame, article:str, start:pd.Timestamp):
         """
         Find the next change to the same article. 
         If no further changes, extend to final date
         """
         temp_times = df[df["Article"] == article]["Start Date"].unique()
+        # all the times later than current time
         later = [x for x in temp_times if x > start]
         try:
             return sorted(later, key=lambda t: t - start)[0]
@@ -37,7 +38,7 @@ def timeline_data():
     # Group topics into 5-6
     topics = negotiations["Article"].unique().tolist()
 
-    def category(article):
+    def category(article:str):
         """
         Quickly sorting articles into groups of 5-6
         Can/should be changed later to thematic groups
@@ -53,7 +54,7 @@ def timeline_data():
     change_count["Start Date"] = change_count['Start Date'].dt.strftime('%Y-%m-%d')
     change_count = change_count.set_index(['Article', 'Start Date']).to_dict()['Count']
     
-    def changes(counts, article, start):
+    def changes(counts:pd.DataFrame, article:str, start:pd.Timestamp):
         """
         Looking up the number of changes per article per date
         """
@@ -62,19 +63,33 @@ def timeline_data():
     negotiations["Change Count"] = negotiations.apply(lambda x: changes(change_count, x["Article"], x["Start Date"]), axis=1)
     
     # Wrap text of changes for tooltips
-    # Not currently in use
+    # Not currently in use, as we could wrap within the plotly table
     '''def split_string(elem):
         """
         Wraps the tooltip text so that it's max 70 characters wide
         """
         return "<br>".join(textwrap.wrap(elem))
     
-    negotiations["Changes from Previous (formatted)"] = negotiations["Changes from Previous Version"].apply(split_string)'''
+    negotiations["Changes from Previous (formatted)"] = negotiations["Changes from Previous Version"] # backslash here
+        .apply(split_string)'''
     return negotiations
 
 '''--------------------- Timeline Figure ---------------------'''
 
-def negotiation_timeline(negotiations, times, range_, grouping_):
+def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp], 
+                         range_:list[pd.Timestamp], grouping_:str):
+    """
+    Creates the timeline figure for contract negotiations
+
+    Args:
+        negotiations (pd.DataFrame): contract change data
+        times (list[pd.Timestamp]): list of all dates in contract data
+        range_ (list[pd.Timestamp]): min and max dates to use
+        grouping_ (str): category of articles (6 max)
+
+    Returns:
+        go.Figure: modified Gantt plot
+    """
     
     # Pull subset based on article group
     subset = negotiations[negotiations["Group"] == grouping_]
@@ -123,11 +138,23 @@ def negotiation_timeline(negotiations, times, range_, grouping_):
 
 '''--------------------- Changes Table Figure ---------------------'''
 
-def time_changes_table(negotiations, article, date):
+def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
+    """
+    Creates a table with the text of all the changes to the article on a given date
+
+    Args:
+        negotiations (pd.DataFrame): contract change data
+        article (str): specific article
+        date (str): date of change, string form instead of Timestamp for ease of use
+
+    Returns:
+        go.Figure: table chart with specific topic and the change made
+    """
     # Choosing a subset of the data based on article/date
     subset = negotiations[(negotiations["Article"] == article) & (negotiations["Date"] == date)]
     
     # selecting party for color, keeping consistent with established color theme
+    # but lightening it a little so that the text shows up and is readable
     party = subset["Party"].unique().tolist()
     if len(party) > 1 or party[0] == 'Tentative Agreement':
         head_color = 'aquamarine',
@@ -141,21 +168,32 @@ def time_changes_table(negotiations, article, date):
     
     # table
     fig = go.Figure(data=go.Table(
-        header=dict(values = ["Topic", header_title], fill_color=head_color, align='left'),
+        header=dict(values = ["<b>Topic</b>", header_title], fill_color=head_color, align='left'),
         cells = dict(values=[subset["Topic"], subset["Changes from Previous Version"]], align='left')
     ),)
     
     # adding and formatting table title
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}", width=40))
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=40))
     )
+    # increasing font size
     fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
     
     return fig
 
 '''--------------------- Changes Bar Chart Figure ---------------------'''
 
-def time_changes_bars(negotiations, article):
+def time_changes_bars(negotiations:pd.DataFrame, article:str):
+    """
+    Creates a bar chart showing the number of changes over time for a given article
+
+    Args:
+        negotiations (pd.DataFrame): contract change data
+        article (str): specific article to examine
+
+    Returns:
+        go.Figure: bar chart with x-axis of dates and y-axis of count of change
+    """
     # select subset of data based on article, using "mean" to get the value of the change count per date
     subset = negotiations[(negotiations["Article"] == article)][['Start Date', 'Party', 'Change Count']]\
         .groupby(['Start Date', 'Party']).mean().reset_index()
@@ -199,6 +237,14 @@ def time_changes_bars(negotiations, article):
     
 '''--------------------- Dash Components ---------------------'''
 def timeline_negotiations():
+    """
+    Creates Dash div and callbacks for the timeline-related charts
+    This is the function that gets imported into app.py
+
+    Returns:
+        html.Div: html code for the Dash layout
+        callbacks: functions for interactivity
+    """
     negotiations = timeline_data()
     
     # List of all dates
@@ -241,7 +287,8 @@ def timeline_negotiations():
                 value=[0, len(TIMES)-1],
                 #'''marks = dict((k, v.date().strftime("%m/%d/%y")) if k is not len(TIMES) - 1
                     #else (k, "Present") for (k,v) in enumerate(TIMES) ),'''
-                marks = dict((each, {"label": str(date.date().strftime("%m/%d/%y")), "style":{"transform": "rotate(20deg)"}})
+                marks = dict((each, {"label": str(date.date().strftime("%m/%d/%y")), 
+                                     "style":{"transform": "rotate(20deg)"}})
                         if each is not len(TIMES) - 1 \
                         else (each, {"label": "Present", "style":{"transform": "rotate(20deg)"}})\
                         for (each, date) in enumerate(TIMES)),
@@ -272,6 +319,7 @@ def timeline_negotiations():
         def update_timeline(dates, group):
             return negotiation_timeline(negotiations, TIMES, 
                                         [TIMES[dates[0]], TIMES[dates[1]]], group)
+    
     # update changes table
     def tl_table_callback(app):
         @app.callback(
@@ -284,6 +332,7 @@ def timeline_negotiations():
             article = clickData["points"][0]['customdata'][0]
             date = clickData["points"][0]['customdata'][1]
             return time_changes_table(negotiations, article, date)
+    
     # update change counts bars
     def tl_bars_callback(app):
         @app.callback(

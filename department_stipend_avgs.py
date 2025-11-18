@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.express as px
-
+from dash import html, dcc
 
 def dept_name(elem):
     """Standardize department names for consistency."""
@@ -100,5 +100,11 @@ def department_stipend_avgs():
         hovermode='x unified'
     )
     
+    # create layout
+    layout = html.Div([
+        html.H3("Northeastern University Department Stipend Averages Over Time"),
+        dcc.Graph(figure=neu_stipends_time)
+    ])
+
     
-    return neu_stipends_time
+    return layout , [] # No callbacks for this component]

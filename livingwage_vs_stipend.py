@@ -38,8 +38,6 @@ def livingwage_vs_stipend():
         y="Overall Pay",
         color="University",
         markers=True,
-        title="While average stipends have gone up across Boston area colleges,<br>"+
-        "they are still below a living wage for the area.",
         custom_data=["Univ. Shorthand", "Pay Rounded"]
     ).update_layout(
         yaxis_tickprefix = '$', yaxis_tickformat = ',.'
@@ -57,8 +55,10 @@ def livingwage_vs_stipend():
 
     # create layout
     layout = html.Div([
-        html.H3("Stipends Over Time vs Living Wage"),
         dcc.Graph(figure=stipends_over_time)
     ])
 
-    return layout , [] # No callbacks for this component]
+    title = "Stipends Over Time vs Living Wage"
+    subtitle = "While average stipends have gone up across Boston area colleges,<br> they are still below a living wage for the area."
+
+    return layout , [], title, subtitle

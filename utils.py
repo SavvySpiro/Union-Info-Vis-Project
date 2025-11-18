@@ -1,3 +1,5 @@
+import pandas as pd
+
 def dept_name(elem):
     """Standardize department names for consistency."""
     dept_mappings = {
@@ -126,6 +128,14 @@ benefit_icons = {
     'Routine Foot Care': '🦶',
     'International Coverage': '🌍'
 }
+
+def wrap_text(text, width=40):
+    """Wrap text to specified width for tooltips"""
+    import textwrap
+    if pd.isna(text) or text == '':
+        return 'No details available'
+    wrapped = textwrap.wrap(str(text), width=width)
+    return '<br>'.join(wrapped)
 
 def verify_figure_mappings(pdf_link_mapping, hotspot_dict):
     """

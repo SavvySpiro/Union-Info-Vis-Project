@@ -166,15 +166,29 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
         head_color='lightcoral',
         header_title= f"<b>Changes (proposed by University)</b>"
     
+    # calculate max topic length for the left-hand column to be thin
+    max_topic_length = subset["Topic"].str.len().max()
+    max_changes_length = subset["Changes from Previous Version"].str.len().max()
+    topic_proportion = max(0.15, min(0.3, max_topic_length / (max_topic_length + max_changes_length)))
+    changes_proportion = 1 - topic_proportion
+
     # table
     fig = go.Figure(data=go.Table(
-        header=dict(values = ["<b>Topic</b>", header_title], fill_color=head_color, align='left'),
-        cells = dict(values=[subset["Topic"], subset["Changes from Previous Version"]], align='left')
-    ),)
+        header=dict(values=["<b>Topic</b>", header_title], fill_color=head_color, align='left'),
+        cells=dict(
+            values=[
+                subset["Topic"], 
+                subset["Changes from Previous Version"]
+            ], 
+            align='left',
+        ),
+        columnwidth=[topic_proportion, changes_proportion]
+    ))
     
     # adding and formatting table title
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=40))
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=40)),
+        height = 500
     )
     # increasing font size
     fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
@@ -265,8 +279,7 @@ def timeline_negotiations():
     
     # Dash layout
     layout = html.Div([
-        # title
-        html.Div([html.H3("Timeline of Contract Negotiations"),
+        html.Div([
         # group dropdown select
         dcc.Dropdown(
             negotiations["Group"].unique().tolist(), 
@@ -280,31 +293,34 @@ def timeline_negotiations():
         ),
         # dates slider, evenly spaced
         html.Div([
-            dcc.RangeSlider(
-                min = 0,
-                max = len(TIMES)-1,
-                step=1,
-                value=[0, len(TIMES)-1],
-                #'''marks = dict((k, v.date().strftime("%m/%d/%y")) if k is not len(TIMES) - 1
-                    #else (k, "Present") for (k,v) in enumerate(TIMES) ),'''
-                marks = dict((each, {"label": str(date.date().strftime("%m/%d/%y")), 
-                                     "style":{"transform": "rotate(20deg)"}})
-                        if each is not len(TIMES) - 1 \
-                        else (each, {"label": "Present", "style":{"transform": "rotate(20deg)"}})\
-                        for (each, date) in enumerate(TIMES)),
-                id="timeline-slider",
-                
-            ),], style={'padding':'2rem 2rem', 'marginBottom': '35px'}),
-        # sub-tables (linked to timeline)
-        html.Div(
-            [html.Div([dcc.Graph(
-                figure = table,
-                id='changes-table'
-            )], style={'width': '49%', 'display': 'inline-block'}),
-            html.Div([dcc.Graph(
-                figure = num_changes,
-                id='changes-bar'
-            )], style={'width': '49%', 'float':'right', 'display': 'inline-block'})])
+            html.Div([
+                dcc.RangeSlider(
+                    min = 0,
+                    max = len(TIMES)-1,
+                    step=1,
+                    value=[0, len(TIMES)-1],
+                    #'''marks = dict((k, v.date().strftime("%m/%d/%y")) if k is not len(TIMES) - 1
+                        #else (k, "Present") for (k,v) in enumerate(TIMES) ),'''
+                    marks = dict((each, {"label": str(date.date().strftime("%m/%d/%y")), 
+                                        "style":{"transform": "rotate(20deg)"}})
+                            if each is not len(TIMES) - 1 \
+                            else (each, {"label": "Present", "style":{"transform": "rotate(20deg)"}})\
+                            for (each, date) in enumerate(TIMES)),
+                    id="timeline-slider",
+                    
+                ),], style={'padding':'2rem 2rem', 'marginBottom': '35px'}),
+            # sub-tables (linked to timeline)
+            html.Div(
+                [html.Div([dcc.Graph(
+                    figure = table,
+                    id='changes-table'
+                )], style={'width': '100%', 'display': 'inline-block'}),
+                # html.Div([dcc.Graph(
+                #     figure = num_changes,
+                #     id='changes-bar'
+                # )], style={'width': '49%', 'float':'right', 'display': 'inline-block'})
+                ])
+        ])
     
     ])
     
@@ -333,16 +349,20 @@ def timeline_negotiations():
             date = clickData["points"][0]['customdata'][1]
             return time_changes_table(negotiations, article, date)
     
-    # update change counts bars
-    def tl_bars_callback(app):
-        @app.callback(
-            Output('changes-bar', 'figure'),
-            Input('negotiation-timeline', 'clickData'),
-            prevent_initial_call=True,
-            suppress_callback_exceptions=True
-        )
-        def update_table(clickData):
-            article = clickData["points"][0]['customdata'][0]
-            return time_changes_bars(negotiations, article)
+    # # update change counts bars
+    # def tl_bars_callback(app):
+    #     @app.callback(
+    #         Output('changes-bar', 'figure'),
+    #         Input('negotiation-timeline', 'clickData'),
+    #         prevent_initial_call=True,
+    #         suppress_callback_exceptions=True
+    #     )
+    #     def update_table(clickData):
+    #         article = clickData["points"][0]['customdata'][0]
+    #         return time_changes_bars(negotiations, article)
+        
+    title = "Timeline of Contract Negotiations"
+    subtitle = ""
     
-    return layout, [tl_slidergroup_callback, tl_table_callback, tl_bars_callback]
+    # NOTE: removed tl bars callback temporarily
+    return layout, [tl_slidergroup_callback, tl_table_callback], title, subtitle

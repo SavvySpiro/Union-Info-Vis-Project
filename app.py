@@ -13,20 +13,19 @@ from timeline_dash import timeline_negotiations
 from benefits_summary import benefits
 
 # Create HTML content and get callbacks
-html_stipends_over_time, callbacks_stipends = livingwage_vs_stipend()
-html_dept_avg, callbacks_dept = department_stipend_avgs()
-html_timeline, callbacks_timeline = timeline_negotiations()
+html_stipends_over_time, callbacks_stipends, title_stipends, subtitle_stipends = livingwage_vs_stipend()
+html_dept_avg, callbacks_dept, title_dept, subtitle_dept = department_stipend_avgs()
+html_timeline, callbacks_timeline, title_timeline, subtitle_timeline = timeline_negotiations()
 html_benefits, callbacks_benefits, title_benefits, subtitle_benefits = benefits()
 
 fallback_html = html.Div("You should not be seeing this, something went wrong")
 
 # Map hotspots to their content and callbacks
 content_mapping = {
-    "hot-0-0": {"html": html_stipends_over_time, "callbacks": callbacks_stipends},
-    "hot-0-1": {"html": html_dept_avg, "callbacks": callbacks_dept},
-    "hot-1-0": {"html": html_dept_avg, "callbacks": callbacks_dept},
-    "hot-2-0": {"html": html_timeline, "callbacks": callbacks_timeline},
-    "hot-3-0": {"html": html_benefits, "callbacks": callbacks_benefits, "title": title_benefits, "subtitle":subtitle_benefits}
+    "hot-0-0": {"html": html_timeline, "callbacks": callbacks_timeline, "title": title_timeline, "subtitle": subtitle_timeline},
+    "hot-2-0": {"html": html_stipends_over_time, "callbacks": callbacks_stipends, "title": title_stipends, "subtitle": subtitle_stipends},
+    "hot-3-0": {"html": html_dept_avg, "callbacks": callbacks_dept, "title": title_dept, "subtitle": subtitle_dept},
+    "hot-5-0": {"html": html_benefits, "callbacks": callbacks_benefits, "title": title_benefits, "subtitle":subtitle_benefits}
 }
 
 app = dash.Dash(__name__, 
@@ -52,18 +51,17 @@ def serve_image(path):
 # ----------------------------------------------------------------
 hotspot_dict = {
     0: [
-        {"top": 300, "left": 120, "width": 250, "height": 40, "id": "hot-0-0"},
-        {"top": 550, "left": 150, "width": 220, "height": 35, "id": "hot-0-1"},
-    ],
-    1: [
-        {"top": 200, "left": 100, "width": 300, "height": 50, "id": "hot-1-0"},
+        {"top": 490, "left": 140, "width": 1000, "height": 160, "id": "hot-0-0"},
     ],
     2: [
-        {"top": 200, "left": 100, "width": 300, "height": 50, "id": "hot-2-0"},
+        {"top": 1300, "left": 310, "width": 670, "height": 80, "id": "hot-2-0"},
     ],
     3: [
-        {"top": 200, "left": 100, "width": 300, "height": 50, "id": "hot-3-0"},
+        {"top": 410, "left": 140, "width": 1000, "height": 150, "id": "hot-3-0"},
     ],
+    5: [
+        {"top": 460, "left": 490, "width": 345, "height": 80, "id": "hot-5-0"},
+    ]
 }
 
 # FIGURE CONSISTENCY VERIFICATION
@@ -145,6 +143,7 @@ app.layout = html.Div(
             is_open=False,
             size="xl",
             scrollable=True,
+            style={"width": "95%", 'maxWidth': 'none'},
         ),
     ],
     style={"height": "100vh", "overflow": "hidden"},

@@ -58,8 +58,6 @@ def department_stipend_avgs():
         color="Department",
         markers=True,
         height=700,
-        title="Though overall stipends have increased since 2013, there is a large disparity between departments,<br>" +
-                "and some departments' stipends appear to have decreased in recent years.",
         custom_data=["Department", "Pay Rounded"]
     )
     
@@ -77,8 +75,10 @@ def department_stipend_avgs():
     
     # create layout
     layout = html.Div([
-        html.H3("Northeastern University Department Stipend Averages Over Time"),
         dcc.Graph(figure=neu_stipends_time)
     ])
     
-    return layout , [] # No callbacks for this component]
+    title = "Northeastern University Department Stipend Averages Over Time"
+    subtitle ="Though overall stipends have increased since 2013, there is a large disparity between departments, \n and some departments' stipends appear to have decreased in recent years."
+    
+    return layout , [], title, subtitle

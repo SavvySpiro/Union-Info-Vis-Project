@@ -11,11 +11,12 @@ from livingwage_vs_stipend import livingwage_vs_stipend
 # from inflation_vs_raises import compare_inflation_and_raises
 from department_stipend_avgs import department_stipend_avgs
 from timeline_dash import timeline
+from benefits_summary import benefits
 
 # Create figures to be displayed
 fig_stipends_over_time = livingwage_vs_stipend()
-# fig_inflation = compare_inflation_and_raises()
 fig_dept_avg = department_stipend_avgs()
+fig_benefits = benefits()
 fig_timeline = timeline()
 fallback_fig = px.scatter(x=[1,2,3], y=[1,2,3], title="You should not be seeing this, something went wrong")
 

@@ -1,3 +1,43 @@
+def dept_name(elem):
+    """Standardize department names for consistency."""
+    dept_mappings = {
+        "computer science": [
+            "computer science", 
+            "khoury college of computer sciences", 
+            "khoury", 
+            "computer", 
+            "phd in computer science"
+        ],
+        "economics": ["economics", "econ"],
+        "english": ["english", "english phd"],
+        "marine and environmental sciences": [
+            "marine and environmental science", 
+            "marine and environmental sciences"
+        ],
+        "sociology and anthropology": [
+            "sociology and anthropology", 
+            "sociology"
+        ],
+        "mechanical and industrial engineering": [
+            "mechanical and industrial engineering", 
+            "mechanical engineering",
+            "industrial engineering", 
+            "college of engineering"
+        ],
+        "psychology": [
+            "psychology",
+            "counseling psychology",
+            "applied psychology"
+        ]
+    }
+    
+    elem_lower = elem.lower() if isinstance(elem, str) else elem
+    
+    for standard_name, variations in dept_mappings.items():
+        if elem_lower in variations:
+            return standard_name
+    
+    return elem
 
 
 def verify_figure_mappings(pdf_link_mapping, hotspot_dict):

@@ -3,7 +3,7 @@
 
 List of Unions spreadsheet: https://docs.google.com/spreadsheets/d/1JQmKm9AMQQ_dfXc-oJeXsESaFfi3ZKCVUGivgnWx7Ro/edit?usp=sharing
 
-# Running the Code
+## Running the Code
 Visualization is a Dash web app, but currently just on localhost:8050 and not on an actual site.
 IF RUNNING FOR THE FIRST TIME: Run pdf_to_png.py first
 Run the app.py file and open http://localhost:8050/ in your web browser

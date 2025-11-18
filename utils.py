@@ -39,6 +39,93 @@ def dept_name(elem):
     
     return elem
 
+benefit_icons = {
+    # Financial/Cost Benefits
+    'Deductible': '💰',
+    'Out-of-Pocket Maximum': '💸',
+    
+    # Basic Medical Services
+    'Preventive Care': '🏥',
+    'Primary Care Visit': '👨‍⚕️',
+    'Specialist Visit': '👩‍⚕️',
+    'Telehealth Services': '💻',
+    
+    # Emergency Services
+    'Emergency Room': '🚑',
+    'Emergency Transportation': '🚨',
+    'Urgent Care': '🏥',
+    
+    # Diagnostic Services
+    'Diagnostic Tests (X-ray/Blood)': '🩸',
+    'Imaging (CT/MRI/PET)': '📷',
+    
+    # Hospital Services
+    'Outpatient Surgery': '🏥',
+    'Hospital Admission': '🏨',
+    
+    # Mental Health
+    'Mental Health Outpatient': '🧠',
+    'Mental Health Inpatient': '🛏️',
+    'Substance Abuse Treatment': '💊',
+    
+    # Prescriptions
+    'Prescription Drugs (Generic)': '💊',
+    'Prescription Drugs (Brand)': '💉',
+    'Prescription Drugs (Specialty)': '🧪',
+    
+    # Home/Extended Care
+    'Home Health Care': '🏠',
+    'Skilled Nursing Facility': '🏢',
+    'Hospice Services': '🕊️',
+    
+    # Therapy Services
+    'Rehabilitation Services': '🦽',
+    'Rehabilitation (PT/OT/Speech)': '💪',
+    'Habilitation Services': '🤸',
+    
+    # Medical Equipment
+    'Durable Medical Equipment': '🦽',
+    
+    # Maternity/Family
+    'Maternity Care': '🤰',
+    'Childbirth/Delivery': '👶',
+    'Birth Control': '💊',
+    'Infertility Treatment': '👨‍👩‍👧',
+    
+    # Alternative Medicine
+    'Acupuncture': '📍',
+    'Chiropractic Care': '🦴',
+    
+    # Vision Services
+    'Vision Exam (Adult)': '👁️',
+    'Vision Exam (Pediatric)': '👓',
+    'Eyeglasses (Adult)': '👓',
+    'Eyeglasses (Pediatric)': '🥽',
+    'Contact Lenses': '👁️',
+    'Vision Additional Benefits': '✨',
+    'Vision Services at Fenway Health': '🏥',
+    'LASIK/PRK': '👁️‍🗨️',
+    
+    # Dental Services
+    'Dental (Adult)': '🦷',
+    'Dental (Pediatric)': '🦷',
+    'Dental Services Detail': '📋',
+    'Dental Maximum Rollover': '🔄',
+    'Dental (Emergency/Medical)': '🦷',
+    
+    # Specialized Services
+    'Hearing Aids': '👂',
+    'Gender-Affirming Care': '⚧️',
+    'TMJ Treatment': '😬',
+    'Immunizations': '💉',
+    'Allergy Services': '🤧',
+    
+    # Other Coverage
+    'Bariatric Surgery': '⚖️',
+    'Weight Loss Programs': '🏃',
+    'Routine Foot Care': '🦶',
+    'International Coverage': '🌍'
+}
 
 def verify_figure_mappings(pdf_link_mapping, hotspot_dict):
     """

@@ -10,11 +10,13 @@ import utils
 from livingwage_vs_stipend import livingwage_vs_stipend
 from department_stipend_avgs import department_stipend_avgs
 from timeline_dash import timeline_negotiations
+from benefits_summary import benefits
 
 # Create HTML content and get callbacks
 html_stipends_over_time, callbacks_stipends = livingwage_vs_stipend()
 html_dept_avg, callbacks_dept = department_stipend_avgs()
 html_timeline, callbacks_timeline = timeline_negotiations()
+html_benefits, callbacks_benefits, title_benefits, subtitle_benefits = benefits()
 
 fallback_html = html.Div("You should not be seeing this, something went wrong")
 
@@ -23,11 +25,13 @@ content_mapping = {
     "hot-0-0": {"html": html_stipends_over_time, "callbacks": callbacks_stipends},
     "hot-0-1": {"html": html_dept_avg, "callbacks": callbacks_dept},
     "hot-1-0": {"html": html_dept_avg, "callbacks": callbacks_dept},
-    "hot-2-0": {"html": html_timeline, "callbacks": callbacks_timeline}
+    "hot-2-0": {"html": html_timeline, "callbacks": callbacks_timeline},
+    "hot-3-0": {"html": html_benefits, "callbacks": callbacks_benefits, "title": title_benefits, "subtitle":subtitle_benefits}
 }
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
+app = dash.Dash(__name__, 
+                external_stylesheets=[dbc.themes.BOOTSTRAP],
+                suppress_callback_exceptions=True)
 # ----------------------------------------------------------------
 # 1. Load PDF page images
 # ----------------------------------------------------------------
@@ -56,6 +60,9 @@ hotspot_dict = {
     ],
     2: [
         {"top": 200, "left": 100, "width": 300, "height": 50, "id": "hot-2-0"},
+    ],
+    3: [
+        {"top": 200, "left": 100, "width": 300, "height": 50, "id": "hot-3-0"},
     ],
 }
 
@@ -123,7 +130,10 @@ app.layout = html.Div(
         # Popup modal - now contains a Div instead of a Graph
         dbc.Modal(
             [
-                dbc.ModalHeader(dbc.ModalTitle("Visualization")),
+                dbc.ModalHeader([
+                    dbc.ModalTitle("Main Title", id="popup-title"),
+                    html.P(className="text-muted small mb-0", id="popup-subtitle")
+                ]),     
                 dbc.ModalBody(
                     html.Div(id="popup-content"),  # Changed from dcc.Graph
                 ),
@@ -146,6 +156,7 @@ app.layout = html.Div(
 @app.callback(
     Output("popup-modal", "is_open"),
     Output("popup-content", "children"),
+    Output("popup-title", "children"),
     [
         Input(hotspot["id"], "n_clicks")
         for page in hotspot_dict.values()
@@ -156,19 +167,35 @@ app.layout = html.Div(
 def open_popup(*args):
     ctx = callback_context
     if not ctx.triggered:
-        return no_update, no_update
-
+        return no_update, no_update, no_update
+    
     triggered_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
+    
     if triggered_id == "close-popup":
-        return False, no_update
-
+        return False, no_update, no_update
+    
     # If a hotspot was clicked, look up the HTML content
     if triggered_id.startswith("hot-"):
-        content = content_mapping.get(triggered_id, {"html": fallback_html})
-        return True, content["html"]
-
-    return no_update, no_update
+        content = content_mapping.get(triggered_id, {
+            "html": fallback_html,
+            "title": "Default Title",
+            "subtitle": ""
+        })
+        
+        # Create the title component with subtitle if provided
+        if content.get("subtitle"):
+            title_component = html.Div([
+                html.Div(content.get("title", "Main Title"), 
+                        style={"fontSize": "1.25rem", "marginBottom": "2px"}),
+                html.Div(content.get("subtitle", ""), 
+                        style={"fontSize": "0.9rem", "color": "#6c757d", "fontWeight": "normal"})
+            ])
+        else:
+            title_component = content.get("title", "Main Title")
+        
+        return True, content["html"], title_component
+    
+    return no_update, no_update, no_update
 
 # ----------------------------------------------------------------
 # 5. Register all callbacks from the visualization functions

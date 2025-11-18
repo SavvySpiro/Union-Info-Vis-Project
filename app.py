@@ -6,13 +6,13 @@ import base64
 import os
 import utils
 
-# local
+# local imports for visualizations
 from livingwage_vs_stipend import livingwage_vs_stipend
 from department_stipend_avgs import department_stipend_avgs
 from timeline_dash import timeline_negotiations
 from benefits_summary import benefits
 
-# Create HTML content and get callbacks
+# Create HTML content and get callbacks, titles, subtitles for modal
 html_stipends_over_time, callbacks_stipends, title_stipends, subtitle_stipends = livingwage_vs_stipend()
 html_dept_avg, callbacks_dept, title_dept, subtitle_dept = department_stipend_avgs()
 html_timeline, callbacks_timeline, title_timeline, subtitle_timeline = timeline_negotiations()
@@ -28,9 +28,11 @@ content_mapping = {
     "hot-5-0": {"html": html_benefits, "callbacks": callbacks_benefits, "title": title_benefits, "subtitle":subtitle_benefits}
 }
 
+# define dash app
 app = dash.Dash(__name__, 
-                external_stylesheets=[dbc.themes.BOOTSTRAP],
-                suppress_callback_exceptions=True)
+                external_stylesheets=[dbc.themes.BOOTSTRAP], #bootstrap is for modals
+                suppress_callback_exceptions=True) #dynamic callbacks like to whine
+
 # ----------------------------------------------------------------
 # 1. Load PDF page images
 # ----------------------------------------------------------------
@@ -64,19 +66,23 @@ hotspot_dict = {
     ]
 }
 
-# FIGURE CONSISTENCY VERIFICATION
+# Verify consistency between the hotspot dict and the content mapping
 try: 
     utils.verify_figure_mappings(content_mapping, hotspot_dict)
 except ValueError as e:
     print(f"\n❌ ERROR: {e}")
 
 # ----------------------------------------------------------------
-# 3. Build layout dynamically
+# 3. Build app layout 
 # ----------------------------------------------------------------
 def build_page_with_overlays(img_src, page_index):
-    """Create one PDF page (an image) with its overlay hotspots."""
+    """
+    Create one PDF page (an image) with its overlay hotspots
+    """
+
     return html.Div(
         [
+            # pdf page image
             html.Img(
                 src=img_src,
                 style={
@@ -85,6 +91,7 @@ def build_page_with_overlays(img_src, page_index):
                 },
             ),
             *[
+                # hotspots that use absolute positioning (will need to change this for screen sizes somehow)
                 html.Div(
                     id=hotspot["id"],
                     n_clicks=0,
@@ -125,15 +132,17 @@ app.layout = html.Div(
             },
         ),
 
-        # Popup modal - now contains a Div instead of a Graph
+        # Popup modal
         dbc.Modal(
             [
                 dbc.ModalHeader([
+                    # custom title and subtitle come from figure functions
                     dbc.ModalTitle("Main Title", id="popup-title"),
                     html.P(className="text-muted small mb-0", id="popup-subtitle")
                 ]),     
+                # holds a html div returned from the figure functions
                 dbc.ModalBody(
-                    html.Div(id="popup-content"),  # Changed from dcc.Graph
+                    html.Div(id="popup-content"),
                 ),
                 dbc.ModalFooter(
                     dbc.Button("Close", id="close-popup", n_clicks=0)
@@ -143,16 +152,17 @@ app.layout = html.Div(
             is_open=False,
             size="xl",
             scrollable=True,
-            style={"width": "95%", 'maxWidth': 'none'},
+            style={"width": "95%", 'maxWidth': 'none'}, #TODO: this doesnt make the modal wider, not sure how to
         ),
     ],
     style={"height": "100vh", "overflow": "hidden"},
 )
 
 # ----------------------------------------------------------------
-# 4. Callback: any hotspot opens the popup
+# 4. Callback: any hotspot opens the corresponding popup
 # ----------------------------------------------------------------
 @app.callback(
+    # defines which html id and what content to change in it
     Output("popup-modal", "is_open"),
     Output("popup-content", "children"),
     Output("popup-title", "children"),
@@ -163,20 +173,24 @@ app.layout = html.Div(
     ] + [Input("close-popup", "n_clicks")],
     State("popup-modal", "is_open")
 )
+
 def open_popup(*args):
+    # Determine which input triggered the callback
     ctx = callback_context
     if not ctx.triggered:
         return no_update, no_update, no_update
     
     triggered_id = ctx.triggered[0]["prop_id"].split(".")[0]
     
+    # if the trigger was the close button
     if triggered_id == "close-popup":
         return False, no_update, no_update
     
     # If a hotspot was clicked, look up the HTML content
     if triggered_id.startswith("hot-"):
+
         content = content_mapping.get(triggered_id, {
-            "html": fallback_html,
+            "html": fallback_html, #default
             "title": "Default Title",
             "subtitle": ""
         })
@@ -200,7 +214,10 @@ def open_popup(*args):
 # 5. Register all callbacks from the visualization functions
 # ----------------------------------------------------------------
 def register_callbacks():
-    """Register all callbacks from the visualization modules."""
+    """
+    Register all callbacks from the visualization modules
+    """
+    
     for hotspot_id, content in content_mapping.items():
         if content["callbacks"]:
             for callback_func in content["callbacks"]:

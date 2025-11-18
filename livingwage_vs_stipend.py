@@ -13,16 +13,20 @@ def livingwage_vs_stipend():
         callbacks: functions for interactivity (not currently used)
     """
 
+    # read data
     stipends = pd.read_csv("data/boston_stipends.csv")
     
+    # Adding shorthand for tooltips
     def uni_shorthand(elem):
-        # Adding shorthand for tooltips
         unis = {"Boston University": "BU", "Harvard University":"Harvard",
                 "MIT":"MIT", "Northeastern University":"Northeastern",
                 "Tufts University":"Tufts", "UMass Boston":"UMass Boston"}
         return unis[elem]
+    
+    # apply shorthand
     stipends["Univ. Shorthand"] = stipends["University"].apply(uni_shorthand)
 
+    # get avg each year
     avg_by_year = stipends[["Academic Year", "University", "Univ. Shorthand", "Overall Pay"]
                            ].groupby(["Academic Year", "University", "Univ. Shorthand"]
                             ).mean().reset_index()
@@ -30,8 +34,10 @@ def livingwage_vs_stipend():
     def rounded_stipend(elem):
         return f"{round(elem, -3)}"[:2]
     
+    # round to k
     avg_by_year["Pay Rounded"] = avg_by_year["Overall Pay"].apply(rounded_stipend)
 
+    # make the line plot
     stipends_over_time = px.line(
         avg_by_year,
         x="Academic Year",
@@ -40,6 +46,7 @@ def livingwage_vs_stipend():
         markers=True,
         custom_data=["Univ. Shorthand", "Pay Rounded"]
     ).update_layout(
+        # use $ in format
         yaxis_tickprefix = '$', yaxis_tickformat = ',.'
 
     ).update_yaxes(title="Overall Pay (Average)"
@@ -49,6 +56,7 @@ def livingwage_vs_stipend():
                         "<b>%{customdata[0]}</b> <br>" +
                         "Average Pay: $%{customdata[1]}k<extra></extra>")
 
+    # add dotted lines for lower and upper boundaries
     stipends_over_time.add_hline(y=63942, line_dash="dash", annotation_text="2025 Boston Living Wage: $63,942", line=dict(color="#A2A2A2"))
     stipends_over_time.add_hline(y=15650, line_dash="dash", annotation_text="Masschusetts Poverty Line: $15,650", line=dict(color="#A2A2A2"))
     stipends_over_time.add_vline(x=2025, line_dash="dot", line=dict(color="#A2A2A2"))

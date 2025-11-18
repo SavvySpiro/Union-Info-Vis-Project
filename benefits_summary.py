@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 from dash import dcc, html, Input, Output
 import numpy as np
 import utils
+import re
 
 def benefits():
     # Read the CSV
@@ -11,7 +12,7 @@ def benefits():
     # Get unique universities and benefits
     universities = benefits_df['University'].unique()
     
-    # Define key benefits to display
+    # Define key benefits to display (you can change this and itll automatically populate)
     key_benefits = [
         'Deductible',
         'Out-of-Pocket Maximum',
@@ -67,7 +68,7 @@ def benefits():
         })
     ])
 
-    # Create callback function (following the same pattern as timeline)
+    # Create callback function for adjusting the bar chart with the selected benefits
     def benefits_details_callback(app):
         @app.callback(
             Output('benefits-details-chart', 'figure'),
@@ -75,6 +76,7 @@ def benefits():
             prevent_initial_call=True,
             suppress_callback_exceptions=True
         )
+        
         def update_details(clickData):
             # Extract benefit name from the clicked point
             # The hovertemplate has the benefit name in it
@@ -92,6 +94,7 @@ def benefits():
     # Return layout and callback list just like timeline does
     return div, [benefits_details_callback], title, subtitle
 
+# main figure, unit chart with the benefits
 def benefits_fig(universities, benefits_df_filtered):
     # Create the figure
     fig = go.Figure()
@@ -100,18 +103,18 @@ def benefits_fig(universities, benefits_df_filtered):
     max_positive = 0
     max_negative = 0
 
-    # Calculate spacing parameters
+    # Calculate spacing parameters (top and bottom might be different)
     for uni in universities:
         uni_data = benefits_df_filtered[benefits_df_filtered['University'] == uni]
         positive_count = len(uni_data[uni_data['Coverage (Yes/No)'] == 'Yes'])
         negative_count = len(uni_data[uni_data['Coverage (Yes/No)'] == 'No'])
-        max_positive = max(max_positive, positive_count)
-        max_negative = max(max_negative, negative_count)
+        max_positive = max(max_positive, positive_count) #num positive benefits
+        max_negative = max(max_negative, negative_count) #num negative benefits
 
-    # Icon size in pixels (marker size 40 + some padding)
-    icon_total_height_px = 45 # 40px marker + 20px padding
+    # Icon size in pixels (marker size + some padding)
+    icon_total_height_px = 45 
     
-    # Calculate height based on the larger side
+    # Calculate height of the chart
     margin_top_bottom = 20
     chart_area_height = (max_positive + max_negative) * icon_total_height_px
     dynamic_height = margin_top_bottom + chart_area_height
@@ -178,8 +181,8 @@ def benefits_fig(universities, benefits_df_filtered):
                 text=[icon],
                 textposition="middle center",
                 textfont=dict(size=20),
-                customdata=[[benefit, utils.wrap_text(details, width=40)]],  # Wrap the details text
-                hovertemplate=(
+                customdata=[[benefit, utils.wrap_text(details, width=40)]],  # Wrap the details text because its going off the screen
+                hovertemplate=( # custom tooltips
                     f"<b>{uni}</b><br>"
                     f"<b>{benefit}</b><br>"
                     f"Coverage: {'Yes' if has_benefit else 'No'}<br>"
@@ -206,6 +209,17 @@ def benefits_fig(universities, benefits_df_filtered):
         layer="below"
     )
 
+    # Upper section (green background)
+    fig.add_shape(
+        type="rect",
+        xref="paper", yref="y",
+        x0=0, y0=0,
+        x1=1, y1=y_max,
+        fillcolor="rgba(200, 255, 200, 0.3)",  # Light green with transparency
+        line=dict(width=0),
+        layer="below"
+    )
+    
     # Add text annotations for "Included" and "Excluded"
     fig.add_annotation(
         x=len(universities) - 0.5,  # Position at the right edge
@@ -216,7 +230,7 @@ def benefits_fig(universities, benefits_df_filtered):
         yref="y",
         xanchor="left",
         yanchor="middle",
-        font=dict(size=16, color="#2ecc71", family="Arial, sans-serif"),
+        font=dict(size=16, color=color_yes, family="Arial, sans-serif"),
         xshift=10  # Shift slightly to the right
     )
     
@@ -229,23 +243,13 @@ def benefits_fig(universities, benefits_df_filtered):
         yref="y",
         xanchor="left",
         yanchor="middle",
-        font=dict(size=16, color="#e74c3c", family="Arial, sans-serif"),
+        font=dict(size=16, color=color_no, family="Arial, sans-serif"),
         xshift=10  # Shift slightly to the right
     )
 
-    # Upper section (green background)
-    fig.add_shape(
-        type="rect",
-        xref="paper", yref="y",
-        x0=0, y0=0,
-        x1=1, y1=y_max,
-        fillcolor="rgba(200, 255, 200, 0.3)",  # Light green with transparency
-        line=dict(width=0),
-        layer="below"
-    )
-    
     # Update layout
     fig.update_layout(
+        # assign x ticks to university
         xaxis=dict(
             ticktext=list(universities),
             tickvals=list(range(len(universities))),
@@ -254,6 +258,7 @@ def benefits_fig(universities, benefits_df_filtered):
             tickfont=dict(size=14),
             range=[-0.5, len(universities) - 0.5]
         ),
+        # assign y ticks to calculated height of the scatter
         yaxis=dict(
             title='Benefit Inclusion in Graduate Student Health Insurance',
             zeroline=True,
@@ -264,6 +269,7 @@ def benefits_fig(universities, benefits_df_filtered):
             range=[y_min, y_max],
             fixedrange=True  # Prevent zooming which can mess up spacing
         ),
+        # label and hovering details
         plot_bgcolor='white',
         paper_bgcolor='#f5f5f5',
         height=dynamic_height,
@@ -275,13 +281,14 @@ def benefits_fig(universities, benefits_df_filtered):
         )
     )
 
+    # center 0 line
     fig.add_hline(y=0, line_dash="solid", line_color="#666", line_width=2)
 
     return fig
 
 def benefit_details(universities, benefits_df_filtered, selected_benefit='Deductible'):
     """
-    Creates a bar chart for any benefit with automatic value extraction.
+    Creates a bar chart for any benefit with automatic value extraction
     """
     fig = go.Figure()
     
@@ -290,17 +297,21 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
     value_type = None
     
     for uni in universities:
+        # get uni data
         uni_data = benefits_df_filtered[
             (benefits_df_filtered['University'] == uni) & 
             (benefits_df_filtered['Benefit'] == selected_benefit)
         ]
         
         if not uni_data.empty:
+            # get coverage status and details
             has_coverage = uni_data.iloc[0]['Coverage (Yes/No)'] == 'Yes'
             details = uni_data.iloc[0]['Details'] if has_coverage else 'Not covered'
             
             if has_coverage:
+                # get the values to put in the bar chart
                 value, vtype = get_best_comparison_value(details, selected_benefit)
+
                 if value is not None:
                     benefit_data.append({
                         'University': uni, 
@@ -346,10 +357,10 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
         # Calculate the mean of numerical values
         mean_value = numerical_df['Value'].mean()
         
-        # Set a small minimum value for visualization
+        # Set a small minimum value for visualization (so 0s dont show as just nothing)
         min_bar_height = min(mean_value * 0.01, 1) if mean_value > 0 else 0.1
         
-        # Determine if this is a cost benefit (lower is better)
+        # Determine if this is a cost benefit (lower is better) manually
         cost_benefits = ['Deductible', 'Out-of-Pocket Maximum', 'Primary Care Visit', 
                         'Emergency Room', 'Urgent Care', 'Specialist Visit', 
                         'Prescription Drugs', 'Imaging', 'Diagnostic Tests']
@@ -427,8 +438,6 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
         )
     else:
         # Coverage status chart (no numerical values found)
-        colors = ['#2ecc71' if v == 1 else '#e74c3c' for v in df['Value']]
-        
         if not no_value_df.empty:
             fig.add_trace(go.Bar(
                 x=no_value_df['University'],
@@ -459,7 +468,6 @@ def extract_numerical_values(details_text):
     Automatically extract numerical values from benefit details text.
     Returns a list of found values with their context.
     """
-    import re
     
     if pd.isna(details_text) or details_text == 'Not covered' or details_text == 'No':
         return []
@@ -467,10 +475,10 @@ def extract_numerical_values(details_text):
     values = []
     
     # First, find all dollar amounts with their full context
-    # This pattern captures more context before and after the dollar amount
     dollar_pattern = r'(?:([^$]{0,30})\$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)([^$]{0,30}))'
     
     for match in re.finditer(dollar_pattern, details_text):
+        # splits into 3 sections and checks for context
         before_context = match.group(1).lower()
         value = float(match.group(2).replace(',', ''))
         after_context = match.group(3).lower()
@@ -503,7 +511,7 @@ def extract_numerical_values(details_text):
             'full_match': match.group(0)
         })
     
-    # Find percentages (but exclude if followed by time units)
+    # Find percentages
     percent_pattern = r'(\d+)%(?!\s*(?:days?|months?|years?))'
     for match in re.finditer(percent_pattern, details_text):
         value = float(match.group(1))
@@ -515,7 +523,7 @@ def extract_numerical_values(details_text):
             'full_match': match.group(0)
         })
     
-    # Find visit/day limits (but be more specific)
+    # Find visit/day limits
     visit_pattern = r'(\d+)\s+(?:visits?|sessions?)\s+(?:per|/)'
     for match in re.finditer(visit_pattern, details_text, re.IGNORECASE):
         value = float(match.group(1))
@@ -532,7 +540,7 @@ def extract_numerical_values(details_text):
 
 def get_best_comparison_value(details_text, benefit_name):
     """
-    Get the best numerical value for comparison based on the benefit type.
+    Get the best numerical value for comparison on the bar chart based on the benefit type
     """
     values = extract_numerical_values(details_text)
     
@@ -556,7 +564,7 @@ def get_best_comparison_value(details_text, benefit_name):
     is_coverage = any(coverage_word in benefit_name for coverage_word in coverage_benefits)
     
     # If it's a coverage benefit and we have multiple values, 
-    # we might want the highest value instead of the first
+    # we want the highest value instead of the first
     if is_coverage and len(values) > 1:
         # For coverage benefits, higher values are usually better
         # Sort by value descending
@@ -564,7 +572,7 @@ def get_best_comparison_value(details_text, benefit_name):
         best_value = values_sorted[0]
     else:
         # For cost benefits or unknown types, use priority system
-        best_value = values[0]  # Already sorted by priority
+        best_value = values[0] 
     
     return best_value['value'], best_value['type']
 

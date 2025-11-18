@@ -64,14 +64,15 @@ def timeline_data():
     
     # Wrap text of changes for tooltips
     # Not currently in use, as we could wrap within the plotly table
-    '''def split_string(elem):
-        """
-        Wraps the tooltip text so that it's max 70 characters wide
-        """
-        return "<br>".join(textwrap.wrap(elem))
+    # def split_string(elem):
+    #     """
+    #     Wraps the tooltip text so that it's max 70 characters wide
+    #     """
+    #     return "<br>".join(textwrap.wrap(elem))
     
-    negotiations["Changes from Previous (formatted)"] = negotiations["Changes from Previous Version"] # backslash here
-        .apply(split_string)'''
+    # negotiations["Changes from Previous (formatted)"] = negotiations["Changes from Previous Version"] # backslash here
+    #     .apply(split_string)
+    
     return negotiations
 
 '''--------------------- Timeline Figure ---------------------'''

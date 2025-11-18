@@ -2,4 +2,5 @@ plotly
 dash
 dash-bootstrap-components
 pdf2image
-#  for pdf conversion code, also need poppler-uti
+#  for pdf conversion code, also need poppler-uti. 
+# On windows, if poppler-uti doesnt work, this may require downloading the latest poppler and adding it to path. no issues on linux.

@@ -422,7 +422,8 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
             height=400,
             width=360,
             showlegend=False,
-            bargap=0.2
+            bargap=0.2,
+            margin = {'t':75,'l':5,'b':0,'r':0}
         )
     else:
         # Coverage status chart (no numerical values found)
@@ -447,7 +448,8 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
             yaxis=dict(visible=False),
             height=400,
             width=360,
-            showlegend=False
+            showlegend=False,
+            margin = {'t':75,'l':15,'b':0,'r':0}
         )
     
     return fig

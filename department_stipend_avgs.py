@@ -1,6 +1,7 @@
 import pandas as pd
 import plotly.express as px
 from dash import html, dcc
+import utils
 
 
 def department_stipend_avgs():

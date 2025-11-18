@@ -229,15 +229,21 @@ def timeline_negotiations():
             clickData={'points': [{'customdata': ['Article', 'Date']}]}
         ),
         # dates slider, evenly spaced
-        html.Div([dcc.RangeSlider(
+        html.Div([
+            dcc.RangeSlider(
                 min = 0,
                 max = len(TIMES)-1,
                 step=1,
                 value=[0, len(TIMES)-1],
-                marks = dict((k, v.date().strftime("%m/%d/%y")) if k is not len(TIMES) - 1 \
-                    else (k, "Present") for (k,v) in enumerate(TIMES) ),
+                #'''marks = dict((k, v.date().strftime("%m/%d/%y")) if k is not len(TIMES) - 1
+                    #else (k, "Present") for (k,v) in enumerate(TIMES) ),'''
+                marks = dict((each, {"label": str(date.date().strftime("%m/%d/%y")), "style":{"transform": "rotate(20deg)"}})
+                        if each is not len(TIMES) - 1 \
+                        else (each, {"label": "Present", "style":{"transform": "rotate(20deg)"}})\
+                        for (each, date) in enumerate(TIMES)),
                 id="timeline-slider",
-            ),],),
+                
+            ),], style={'padding':'2rem 2rem', 'marginBottom': '35px'}),
         # sub-tables (linked to timeline)
         html.Div(
             [html.Div([dcc.Graph(

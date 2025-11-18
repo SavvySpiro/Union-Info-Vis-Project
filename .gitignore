@@ -8,6 +8,7 @@ __pycache__/
 
 # local
 assets/
+icons/
 
 # Distribution / packaging
 .Python

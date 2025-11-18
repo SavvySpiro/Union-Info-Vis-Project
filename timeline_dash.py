@@ -122,6 +122,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
     timeline.update_xaxes(rangebreaks = [dict(values=missing_dates)])
 
     # Renaming the x-axis to Mon DD, YY format, with the final "date" as "Present"
+    # also updating margins to give it some more space
     timeline.update_layout(
         xaxis = dict(
             tickmode = "array",
@@ -129,6 +130,14 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
             ticktext = [time.date().strftime("%b %d, %y") for time in times[:-1]] + ["Present"],
             range = range_,
         ),
+        margin={'t':75,'l':0,'b':0,'r':2}
+    )
+    
+    timeline.update_legends(
+        title = "Party:",
+        orientation = "h",
+        yanchor = "bottom",
+        y = 1.02,
     )
     # Adding click option for linked charts
     timeline.update_layout(
@@ -169,7 +178,7 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     # calculate max topic length for the left-hand column to be thin
     max_topic_length = subset["Topic"].str.len().max()
     max_changes_length = subset["Changes from Previous Version"].str.len().max()
-    topic_proportion = max(0.15, min(0.3, max_topic_length / (max_topic_length + max_changes_length)))
+    topic_proportion = max(0.2, min(0.3, max_topic_length / (max_topic_length + max_changes_length)))
     changes_proportion = 1 - topic_proportion
 
     # table
@@ -185,10 +194,11 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
         columnwidth=[topic_proportion, changes_proportion]
     ))
     
-    # adding and formatting table title
+    # adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=40)),
-        height = 500
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)),
+        height = 500,
+        margin={'t':75,'l':0,'b':0,'r':0}
     )
     # increasing font size
     fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
@@ -225,12 +235,13 @@ def time_changes_bars(negotiations:pd.DataFrame, article:str):
         color = 'Party',
         color_discrete_map=colordict,
         custom_data=["Party"],
-        title= "<br>".join(textwrap.wrap(f"How many changes did the {article} article go through?", width=40))
+        title= "<br>".join(textwrap.wrap(f"Changes to the {article} article", width=40))
     )
     
     # Integers only on the y-axis
     fig.update_yaxes(
         tickmode='linear',
+        dtick=2,
         tickformat = ',d'
     )
     
@@ -240,12 +251,22 @@ def time_changes_bars(negotiations:pd.DataFrame, article:str):
                         "<b>Date: </b> %{x} <br>" +
                         "<b>Number of changes:</b> %{y}<extra></extra>")
     
+    # setting bar width to be a fixed size
+    ## apparently plotly does this in milliseconds for time data???
+    fig.update_traces(
+        width = [1000 * 3600 * 24 * 9 for x in range(len(subset))]
+    )
+    
     # Legend is labeled with total number of changes
     fig.update_legends(
-        title_text = f"Total changes: {int(subset['Change Count'].sum())}",
+        title_text = f"Total changes: {int(subset['Change Count'].sum())}<br>",
         orientation = "h",
         yanchor = "bottom",
-        y = .99
+        y = -0.5,
+    )
+    # updating margins for spacing
+    fig.update_layout(
+        margin={'t':75,'l':5,'b':0,'r':0}
     )
     return fig
     
@@ -314,11 +335,11 @@ def timeline_negotiations():
                 [html.Div([dcc.Graph(
                     figure = table,
                     id='changes-table'
-                )], style={'width': '100%', 'display': 'inline-block'}),
-                # html.Div([dcc.Graph(
-                #     figure = num_changes,
-                #     id='changes-bar'
-                # )], style={'width': '49%', 'float':'right', 'display': 'inline-block'})
+                )], style={'width': '63%', 'display': 'inline-block'}),
+                html.Div([dcc.Graph(
+                    figure = num_changes,
+                    id='changes-bar'
+                )], style={'width': '35%', 'float':'right', 'display': 'inline-block'})
                 ])
         ])
     
@@ -349,20 +370,20 @@ def timeline_negotiations():
             date = clickData["points"][0]['customdata'][1]
             return time_changes_table(negotiations, article, date)
     
-    # # update change counts bars
-    # def tl_bars_callback(app):
-    #     @app.callback(
-    #         Output('changes-bar', 'figure'),
-    #         Input('negotiation-timeline', 'clickData'),
-    #         prevent_initial_call=True,
-    #         suppress_callback_exceptions=True
-    #     )
-    #     def update_table(clickData):
-    #         article = clickData["points"][0]['customdata'][0]
-    #         return time_changes_bars(negotiations, article)
+    # update change counts bars
+    def tl_bars_callback(app):
+        @app.callback(
+            Output('changes-bar', 'figure'),
+            Input('negotiation-timeline', 'clickData'),
+            prevent_initial_call=True,
+            suppress_callback_exceptions=True
+        )
+        def update_table(clickData):
+            article = clickData["points"][0]['customdata'][0]
+            return time_changes_bars(negotiations, article)
         
     title = "Timeline of Contract Negotiations"
     subtitle = ""
     
     # NOTE: removed tl bars callback temporarily
-    return layout, [tl_slidergroup_callback, tl_table_callback], title, subtitle
+    return layout, [tl_slidergroup_callback, tl_table_callback, tl_bars_callback], title, subtitle

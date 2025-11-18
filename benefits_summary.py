@@ -416,7 +416,7 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
         )
         
         fig.update_layout(
-            title=f'{selected_benefit} Comparison',
+            title=utils.wrap_text(f'{selected_benefit} Comparison', width = 30),
             xaxis_title='University',
             yaxis_title=y_title,
             height=400,
@@ -442,7 +442,7 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
             ))
 
         fig.update_layout(
-            title=f'{selected_benefit} Coverage by University',
+            title=utils.wrap_text(f'{selected_benefit} Coverage by University', width = 30),
             xaxis_title='University',
             yaxis=dict(visible=False),
             height=400,

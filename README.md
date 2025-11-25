@@ -5,8 +5,10 @@ List of Unions spreadsheet: https://docs.google.com/spreadsheets/d/1JQmKm9AMQQ_d
 
 ## Running the Code
 Visualization is a Dash web app, but currently just on localhost:8050 and not on an actual site.
-IF RUNNING FOR THE FIRST TIME: Run pdf_to_png.py first
-Run the app.py file and open http://localhost:8050/ in your web browser
+
+IF RUNNING FOR THE FIRST TIME: 
+1. Run pdf_to_png.py first to generate individual images fromt the background contract PDF
+2. Run the app.py file and open http://localhost:8050/ in your web browser
 See requirements.txt for required libraries that may need to be installed.
 
 ## Final Project Requirements:

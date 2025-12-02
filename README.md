@@ -24,7 +24,15 @@ See requirements.txt for required libraries that may need to be installed.
 - [x] screenshots of current visualization
 
 ## Tasks:
-
+- [ ] Miscellaneous/post-user feedback tasks
+    - [ ] Add arrows to timeline for clarity
+    - [ ] Label clickable boxes
+    - [ ] Dynamic box configuration
+    - [ ] Add instructions on how to navigate to the more complicated vis
+    - [ ] More visualizations?
+    - [ ] Write paper
+    - [ ] Do demo
+    - [ ] Do presentation
 - [ ] Dashboard set up
     - [x] Contract loaded as background
     - [x] Pop-ups working, showing visualization

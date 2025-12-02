@@ -1,5 +1,16 @@
 import pandas as pd
 
+def px_to_percent(hotspot_px, img_width, img_height):
+    """Convert pixel-based hotspot to percentage-based"""
+    return {
+        "top": (hotspot_px["top"] / img_height) * 100,
+        "left": (hotspot_px["left"] / img_width) * 100,
+        "width": (hotspot_px["width"] / img_width) * 100,
+        "height": (hotspot_px["height"] / img_height) * 100,
+        "id": hotspot_px["id"]
+    }
+
+
 def dept_name(elem):
     """Standardize department names for consistency."""
     dept_mappings = {

@@ -92,4 +92,6 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Axis labels
     - [x] Tooltips
     - [x] Dropdown to choose between topics
+    - [ ] Wrap topic titles
+    - [ ] Arrow to either axis or bars
 

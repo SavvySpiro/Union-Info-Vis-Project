@@ -36,14 +36,59 @@ def timeline_data():
     )
     
     # Group topics into 5-6
-    topics = negotiations["Article"].unique().tolist()
+    #topics = negotiations["Article"].unique().tolist()
+    topics = {
+        'Labor Management Committee':"Union (General)", 
+        'Union Security':"Union (General)", 
+        'Union Access and Rights':"Union (General)", 
+        'No Strike No Lockout':"Union (General)", 
+        'Union Officers and Stewards':"Union (General)",
+        'Recognition':"Union (General)",
+        'Bargaining Ground Rules':"Union (Legal)", 
+        'Successorship':"Union (Legal)", 
+        'Comprehensive and Complete Agreement':"Union (Legal)", 
+        'Severability':"Union (Legal)", 
+        'Grievance and Arbitration':"Union (Legal)",
+        'Employment Records':"Employment 1", 
+        'Discipline and Dismissal':"Employment 1",
+        'Sub-Contracting':"Employment 1", 
+        'Retirement':"Employment 1", 
+        'Hourly Assignments':"Employment 1",
+        'Training':"Employment 3",
+        'Job Postings':"Employment 2", 
+        'International Worker Rights':"Employment 2", 
+        'Management Rights':"Employment 2", 
+        'Titles and Classifications':"Employment 2", 
+        'Workspace and Materials':"Employment 2",
+        'Artificial Intelligence':"Employment 3", 
+        'Automation':"Employment 3", 
+        'Grievance and Arbitration':"Employment 3", 
+        'Appointments and Reappointments':"Employment 3",
+        'Appointment Security':"Employment 3",
+        'Housing':"Benefits", 
+        'Parking and Transit':"Benefits", 
+        'Relocation Assistance':"Benefits", 
+        'Tax Assistance':"Benefits", 
+        'Vacation and Personal Time':"Benefits", 
+        'Professional Development':"Benefits", 
+        'Travel':"Other",
+        'Tuition and Fees':"Academic", 
+        'FERPA Waiver Form':"Academic",
+        'Intellectual Property':"Academic",
+        'Professional and Academic Freedom':"Academic",
+        'Accessibility':"Other", 
+        'Prohibition Against Discrimination and Harassment':"Other", 
+        'Health and Safety':"Benefits",
+        'Holidays':"Other"
+    }
 
     def category(article:str):
         """
         Quickly sorting articles into groups of 5-6
         Can/should be changed later to thematic groups
         """
-        return f"Article Group {int(np.floor(topics.index(article)/6)) + 1}"
+        #return f"Article Group {int(np.floor(topics.index(article)/6)) + 1}"
+        return topics[article]
     
     negotiations["Group"] = negotiations["Article"].apply(category)
     
@@ -78,7 +123,7 @@ def timeline_data():
 '''--------------------- Timeline Figure ---------------------'''
 
 def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp], 
-                         range_:list[pd.Timestamp], grouping_:str):
+                         range_:list[pd.Timestamp], grouping_:str = "Benefits"):
     """
     Creates the timeline figure for contract negotiations
 
@@ -86,7 +131,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
         negotiations (pd.DataFrame): contract change data
         times (list[pd.Timestamp]): list of all dates in contract data
         range_ (list[pd.Timestamp]): min and max dates to use
-        grouping_ (str): category of articles (6 max)
+        grouping_ (str): category of articles
 
     Returns:
         go.Figure: modified Gantt plot
@@ -287,11 +332,13 @@ def timeline_negotiations():
     TIMES = sorted(negotiations["Start Date"].unique())
     TIMES.append(pd.to_datetime("2025-05-30"))
     
+    TOPICS = sorted(negotiations["Group"].unique())
+    
     # Default timeline is all dates, with a selected group
     # Group has Health and Safety in it, to match the default linked charts
     timeline = negotiation_timeline(negotiations, TIMES, 
                                     [negotiations["Start Date"].min(), 
-                                    negotiations["End Date"].max()], "Article Group 3")
+                                    negotiations["End Date"].max()], "Benefits")
     
     # Picked a starting table to show
     table = time_changes_table(negotiations, "Health and Safety", '8/26/2024')
@@ -304,8 +351,8 @@ def timeline_negotiations():
         html.Div([
         # group dropdown select
         dcc.Dropdown(
-            negotiations["Group"].unique().tolist(), 
-            "Article Group 1", 
+            options = sorted(negotiations["Group"].unique().tolist()),
+            value="Benefits", 
             id='timeline-group')], style={'width': '49%', 'display': 'inline-block'}),
         # main timeline graph
         dcc.Graph(

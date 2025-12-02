@@ -62,10 +62,10 @@ IMAGE_HEIGHT = 2200  # Replace with your actual height
 hotspot_dict = {
     0: [
         {
-            "top": (490 / IMAGE_HEIGHT) * 100,     # Convert to %
+            "top": (610 / IMAGE_HEIGHT) * 100,     # Convert to %
             "left": (140 / IMAGE_WIDTH) * 100,     # Convert to %
-            "width": (1000 / IMAGE_WIDTH) * 100,   # Convert to %
-            "height": (160 / IMAGE_HEIGHT) * 100,  # Convert to %
+            "width": (1500 / IMAGE_WIDTH) * 100,   # Convert to %
+            "height": (240 / IMAGE_HEIGHT) * 100,  # Convert to %
             "id": "hot-0-0"
         },
     ],

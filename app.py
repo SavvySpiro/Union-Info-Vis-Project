@@ -51,18 +51,50 @@ def serve_image(path):
 # ----------------------------------------------------------------
 # 2. Define hotspots (clickable regions)
 # ----------------------------------------------------------------
+# print img height and width for reference
+from PIL import Image
+img = Image.open(pdf_images[0])
+print(img.size)  # Output: (width, height)
+
+IMAGE_WIDTH = 1700  # Replace with your actual width
+IMAGE_HEIGHT = 2200  # Replace with your actual height
+
 hotspot_dict = {
     0: [
-        {"top": 490, "left": 140, "width": 1000, "height": 160, "id": "hot-0-0"},
+        {
+            "top": (490 / IMAGE_HEIGHT) * 100,     # Convert to %
+            "left": (140 / IMAGE_WIDTH) * 100,     # Convert to %
+            "width": (1000 / IMAGE_WIDTH) * 100,   # Convert to %
+            "height": (160 / IMAGE_HEIGHT) * 100,  # Convert to %
+            "id": "hot-0-0"
+        },
     ],
     2: [
-        {"top": 1300, "left": 310, "width": 670, "height": 80, "id": "hot-2-0"},
+        {
+            "top": (1300 / IMAGE_HEIGHT) * 100,
+            "left": (310 / IMAGE_WIDTH) * 100,
+            "width": (670 / IMAGE_WIDTH) * 100,
+            "height": (80 / IMAGE_HEIGHT) * 100,
+            "id": "hot-2-0"
+        },
     ],
     3: [
-        {"top": 410, "left": 140, "width": 1000, "height": 150, "id": "hot-3-0"},
+        {
+            "top": (410 / IMAGE_HEIGHT) * 100,
+            "left": (140 / IMAGE_WIDTH) * 100,
+            "width": (1000 / IMAGE_WIDTH) * 100,
+            "height": (150 / IMAGE_HEIGHT) * 100,
+            "id": "hot-3-0"
+        },
     ],
     5: [
-        {"top": 460, "left": 490, "width": 345, "height": 80, "id": "hot-5-0"},
+        {
+            "top": (460 / IMAGE_HEIGHT) * 100,
+            "left": (490 / IMAGE_WIDTH) * 100,
+            "width": (345 / IMAGE_WIDTH) * 100,
+            "height": (80 / IMAGE_HEIGHT) * 100,
+            "id": "hot-5-0"
+        },
     ]
 }
 
@@ -79,7 +111,6 @@ def build_page_with_overlays(img_src, page_index):
     """
     Create one PDF page (an image) with its overlay hotspots
     """
-
     return html.Div(
         [
             # pdf page image
@@ -87,20 +118,21 @@ def build_page_with_overlays(img_src, page_index):
                 src=img_src,
                 style={
                     "width": "100%",
+                    "height": "auto",  # Important! Maintains aspect ratio
                     "display": "block",
                 },
             ),
             *[
-                # hotspots that use absolute positioning (will need to change this for screen sizes somehow)
+                # hotspots using percentage positioning
                 html.Div(
                     id=hotspot["id"],
                     n_clicks=0,
                     style={
                         "position": "absolute",
-                        "top": f"{hotspot['top']}px",
-                        "left": f"{hotspot['left']}px",
-                        "width": f"{hotspot['width']}px",
-                        "height": f"{hotspot['height']}px",
+                        "top": f"{hotspot['top']}%",      
+                        "left": f"{hotspot['left']}%",    
+                        "width": f"{hotspot['width']}%",  
+                        "height": f"{hotspot['height']}%", 
                         "cursor": "pointer",
                         "backgroundColor": "rgba(255, 255, 0, 0.3)",
                         "border": "2px solid rgba(255,200,0,0.4)",

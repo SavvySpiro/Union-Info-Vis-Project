@@ -63,36 +63,37 @@ hotspot_dict = {
     0: [
         {
             "top": (610 / IMAGE_HEIGHT) * 100,     # Convert to %
-            "left": (140 / IMAGE_WIDTH) * 100,     # Convert to %
-            "width": (1500 / IMAGE_WIDTH) * 100,   # Convert to %
+            "left": (170 / IMAGE_WIDTH) * 100,     # Convert to %
+            "width": (1400 / IMAGE_WIDTH) * 100,   # Convert to %
             "height": (240 / IMAGE_HEIGHT) * 100,  # Convert to %
             "id": "hot-0-0"
         },
+        # add hotspoty on articles 5 and 6
     ],
     2: [
         {
-            "top": (1300 / IMAGE_HEIGHT) * 100,
-            "left": (310 / IMAGE_WIDTH) * 100,
-            "width": (670 / IMAGE_WIDTH) * 100,
-            "height": (80 / IMAGE_HEIGHT) * 100,
+            "top": (600 / IMAGE_HEIGHT) * 100,
+            "left": (170 / IMAGE_WIDTH) * 100,
+            "width": (1400 / IMAGE_WIDTH) * 100,
+            "height": (250 / IMAGE_HEIGHT) * 100,
             "id": "hot-2-0"
         },
     ],
     3: [
         {
-            "top": (410 / IMAGE_HEIGHT) * 100,
-            "left": (140 / IMAGE_WIDTH) * 100,
-            "width": (1000 / IMAGE_WIDTH) * 100,
-            "height": (150 / IMAGE_HEIGHT) * 100,
+            "top": (550 / IMAGE_HEIGHT) * 100,
+            "left": (170 / IMAGE_WIDTH) * 100,
+            "width": (1300 / IMAGE_WIDTH) * 100,
+            "height": (180 / IMAGE_HEIGHT) * 100,
             "id": "hot-3-0"
         },
     ],
     5: [
         {
-            "top": (460 / IMAGE_HEIGHT) * 100,
-            "left": (490 / IMAGE_WIDTH) * 100,
-            "width": (345 / IMAGE_WIDTH) * 100,
-            "height": (80 / IMAGE_HEIGHT) * 100,
+            "top": (730 / IMAGE_HEIGHT) * 100,
+            "left": (170 / IMAGE_WIDTH) * 100,
+            "width": (1300 / IMAGE_WIDTH) * 100,
+            "height": (460 / IMAGE_HEIGHT) * 100,
             "id": "hot-5-0"
         },
     ]
@@ -143,8 +144,10 @@ def build_page_with_overlays(img_src, page_index):
         ],
         style={
             "position": "relative",
-            "width": "70%",
+            "maxWidth": "1200px",  # Optional: set a max width
             "margin": "20px auto",
+            "width": "100%",       # Changed from 70%
+            "padding": "0 15px",   # Add some padding instead
         },
     )
 
@@ -152,9 +155,16 @@ app.layout = html.Div(
     [
     # header and explanation
         html.Div(
-            [html.Header("The Northeastern/GENU-UAW Contract as it currently stands"),
+            [html.Header("The Northeastern/GENU-UAW Contract as it currently stands",
+                style={
+                "fontSize": "2rem",
+                "fontWeight": "bold",
+                "marginBottom": "10px"
+            }),
             html.Div(
-                "The visualizations on this page are designed to help explain what is in the union contract so that any graduate student can understand what is the current state of negotiations and how we got there."
+                "The Student Union has been in contract negotiations with Northeastern University since April 2023. " +
+                "<br>Below are visualizations that highlight key aspects of the current contract proposal, including stipend comparisons, departmental averages, negotiation timelines, and benefits summaries. "+
+                "<zbr>Click on the highlighted areas in the contract pages to explore these insights.",
             )]),
         html.Div(
             

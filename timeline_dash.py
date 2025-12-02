@@ -153,13 +153,16 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
                 color="Party",
                 color_discrete_map=colordict,
                 custom_data=["Article", "Date", "Change Count"],
-                labels={"Article":""})
+                labels={"Article":""},
+                #pattern_shape="Party",
+                )
 
     # Timeline hover tooltip
     timeline.update_traces(hovertemplate= 
                         "<b>Topic:</b> %{y} <br>" +
                         "<b>Date: </b> %{customdata[1]} <br>" +
                         "<b>Number of changes:</b> %{customdata[2]}<extra></extra>")
+    
     
     # Adjusting x-axis to be consistently spaced
     present_dates=set(negotiations['Start Date']).union(set(negotiations["End Date"]))

@@ -118,7 +118,14 @@ def build_page_with_overlays(img_src, page_index):
 
 app.layout = html.Div(
     [
+    # header and explanation
         html.Div(
+            [html.Header("The Northeastern/GENU-UAW Contract as it currently stands"),
+            html.Div(
+                "The visualizations on this page are designed to help explain what is in the union contract so that any graduate student can understand what is the current state of negotiations and how we got there."
+            )]),
+        html.Div(
+            
             [
                 build_page_with_overlays(serve_image(img), i)
                 for i, img in enumerate(pdf_images)

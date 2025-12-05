@@ -12,11 +12,40 @@ IF RUNNING FOR THE FIRST TIME:
 See requirements.txt for required libraries that may need to be installed.
 
 ## Final Project Requirements:
-- [ ] Must contain a form of color encoding
-- [ ] Must include brushing and linking
-- [ ] Must include overview concept
-- [ ] must include details-on-demand
-- [ ] must include two different visual encodings
+- [x] Must contain a form of color encoding
+- [x] Must include brushing and linking
+- [x] Must include overview concept
+- [x] must include details-on-demand
+- [x] must include two different visual encodings
+
+## DEADLINES
+- [ ] 12/9 1:35pm presentation, demo video
+- [ ] 12/10 5:pm paper
+
+## Last Minute To-Do
+- [ ] Bigger titles and subtitles
+- [ ] Fix timeline vis
+    - [ ] Comparing changes?
+    - [ ] Explaining what "no change" means OR filter out with regex
+    - [ ] Drop bar chart, add another column to table to show previous changes
+    - [ ] On main timeline, opacity = # changes?
+- [ ] Update stipend visualizations
+    - [ ] Make the living wage/poverty line pop out more
+    - [ ] Vertical line was confusing?
+- [ ] Benefits
+    - [ ] Unique emojis
+    - [ ] Legend at bottom of what emojis are
+    - [ ] Include corresponding emoji in title of bar chart
+- [ ] Write instructions for use at top
+- [ ] Table of contents at top/links to diff vis boxes
+- [ ] More explanations for vis/longer captions (e.g. explain groupings in timeline)
+- [ ] Titles on boxes
+- [ ] Write paper
+- [ ] Create demo (Alenna)
+- [ ] Write presentation/slide deck
+- [ ] IF TIME: Tutorial for visualizations
+- [ ] IF TIME: Highlight on hover (if pink, it's clickable)
+- [ ] IF NO TIME: Specialized instructions on each modal for what you can click
 
 ## Milestone 3 Requirements:
 - [x] Short 1 minute screen grab video with narration explaining the progress so far on the implementation

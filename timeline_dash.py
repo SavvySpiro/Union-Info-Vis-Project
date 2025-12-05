@@ -62,7 +62,6 @@ def timeline_data():
         'Workspace and Materials':"Employment 2",
         'Artificial Intelligence':"Employment 3", 
         'Automation':"Employment 3", 
-        'Grievance and Arbitration':"Employment 3", 
         'Appointments and Reappointments':"Employment 3",
         'Appointment Security':"Employment 3",
         'Housing':"Benefits", 

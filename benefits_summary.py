@@ -369,10 +369,10 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
         # Determine colors for numerical values
         if is_cost_benefit:
             # For costs: below mean is good (green), above is bad (red)
-            bar_colors = ['#2ecc71' if v < mean_value else '#e74c3c' for v in numerical_df['Value']]
+            bar_colors = ['#2ecc71' if v <= mean_value else '#e74c3c' for v in numerical_df['Value']]
         else:
             # For coverage amounts: above mean is good (green), below is bad (red)
-            bar_colors = ['#2ecc71' if v > mean_value else '#e74c3c' for v in numerical_df['Value']]
+            bar_colors = ['#2ecc71' if v >= mean_value else '#e74c3c' for v in numerical_df['Value']]
         
         # Format text based on value type
         if value_type == 'dollar':

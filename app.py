@@ -2,6 +2,7 @@ import dash
 from dash import html, dcc, Input, Output, State, no_update, callback_context
 import dash_bootstrap_components as dbc
 import plotly.express as px
+import dash.dependencies
 import base64
 import os
 import utils
@@ -186,6 +187,58 @@ def build_page_with_overlays(img_src, page_index):
         },
     )
 
+# Jump modal layout
+jump_modal_layout = dbc.Modal(
+    [
+        dbc.ModalHeader(dbc.ModalTitle("Jump to Visualization")),
+        dbc.ModalBody(
+            html.Div([
+                html.Div([
+                    html.Div([
+                        html.H5(content_mapping[hotspot_id]["title"], 
+                               style={"marginBottom": "10px", "color": "#990000"}),
+                        html.P(content_mapping[hotspot_id].get("subtitle", ""),
+                              style={"fontSize": "0.9rem", "color": "#666"}),
+                        html.A(
+                            f"Go to Page {page_idx + 1}",
+                            id={"type": "jump-to", "index": hotspot_id},
+                            href=f"#{hotspot_id}",
+                            style={
+                                "padding": "8px 15px",
+                                "backgroundColor": "#990000",
+                                "color": "white",
+                                "border": "none",
+                                "borderRadius": "5px",
+                                "cursor": "pointer",
+                                "fontSize": "0.9rem",
+                                "textDecoration": "none",
+                                "display": "inline-block"
+                            }
+                        )
+                    ], style={"flex": "1", "paddingRight": "20px"}),
+                ], style={
+                    "display": "flex", 
+                    "alignItems": "center",
+                    "padding": "15px",
+                    "borderBottom": "1px solid #ddd",
+                    "marginBottom": "10px"
+                })
+                for page_idx, hotspots in hotspot_dict.items()
+                for hotspot in hotspots
+                for hotspot_id in [hotspot["id"]]
+            ])
+        ),
+        dbc.ModalFooter(
+            dbc.Button("Close", id="close-jump-modal", n_clicks=0)
+        ),
+    ],
+    id="jump-modal",
+    is_open=False,
+    size="lg",
+    scrollable=True,
+)
+
+
 title = "See What's at Stake: Northeastern/GENU-UAW Contract Proposal Visualized"
 subtitle = "Unlike traditional contract negotiations which are article-by-article, Northeastern released a complete 'Final' contract proposal all at once. This dashboard visualizes key provisions to help union members understand what's being offered." 
 instructions = "Click on the highlighted sections of the proposal pages below to explore interactive visualizations that break down important aspects of the contract like stipend trends, departmental averages, negotiation timelines, and insurance benefits summaries."
@@ -226,7 +279,23 @@ app.layout = html.Div(
                     "whiteSpace": "pre-line",
                     "color": "#990000"
                 }
-            )]),
+            ),
+            # button for jumping around
+            html.Button("Jump to Visualization", id="jump-button", n_clicks=0, 
+                        style={"marginBottom": "20px",
+                               "marginLeft": "20px",
+                            "padding": "10px 15px", 
+                            "fontSize": "1rem",
+                            "backgroundColor": "#990000",
+                            "color": "white",
+                            "border": "none",
+                            "borderRadius": "5px",
+                            "cursor": "pointer",
+                            "hover": {
+                                "backgroundColor": "#770000"
+                            }
+                        }),
+            ]),
         # horizontal line
         html.Hr(),
         html.Div(
@@ -266,6 +335,8 @@ app.layout = html.Div(
             scrollable=True,
             style={"width": "95%", 'maxWidth': 'none'}, #TODO: this doesnt make the modal wider, not sure how to
         ),
+        jump_modal_layout,
+        dcc.Location(id='url', refresh=False),
     ],
     style={"height": "100vh", "overflow": "hidden"},
 )
@@ -337,6 +408,84 @@ def register_callbacks():
 
 # Register all callbacks after app layout is defined
 register_callbacks()
+
+
+# ----------------------------------------------------------------
+# 6. Additional Callbacks and buttons
+# ----------------------------------------------------------------
+# Jump modal layout  
+jump_modal_layout = dbc.Modal(
+    [
+        dbc.ModalHeader(dbc.ModalTitle("Jump to Visualization")),
+        dbc.ModalBody(
+            html.Div([
+                html.Div([
+                    html.Div([
+                        html.H5(content_mapping[hotspot_id]["title"], 
+                               style={"marginBottom": "10px", "color": "#990000"}),
+                        html.P(content_mapping[hotspot_id].get("subtitle", ""),
+                              style={"fontSize": "0.9rem", "color": "#666"}),
+                        html.Button(
+                            f"Go to Page {page_idx + 1}",
+                            id={"type": "jump-to", "index": hotspot_id},
+                            n_clicks=0,
+                            **{"data-hotspot": hotspot_id},  # Store hotspot ID as data attribute
+                            style={
+                                "padding": "8px 15px",
+                                "backgroundColor": "#990000",
+                                "color": "white",
+                                "border": "none",
+                                "borderRadius": "5px",
+                                "cursor": "pointer",
+                                "fontSize": "0.9rem"
+                            }
+                        )
+                    ], style={"flex": "1", "paddingRight": "20px"}),
+                ], style={
+                    "display": "flex", 
+                    "alignItems": "center",
+                    "padding": "15px",
+                    "borderBottom": "1px solid #ddd",
+                    "marginBottom": "10px"
+                })
+                for page_idx, hotspots in hotspot_dict.items()
+                for hotspot in hotspots
+                for hotspot_id in [hotspot["id"]]
+            ])
+        ),
+        dbc.ModalFooter(
+            dbc.Button("Close", id="close-jump-modal", n_clicks=0)
+        ),
+    ],
+    id="jump-modal",
+    is_open=False,
+    size="lg",
+    scrollable=True,
+)
+
+@app.callback(
+    Output("jump-modal", "is_open"),
+    [Input("jump-button", "n_clicks"),
+     Input("close-jump-modal", "n_clicks"),
+     Input({"type": "jump-to", "index": dash.dependencies.ALL}, "n_clicks")],
+    State("jump-modal", "is_open"),
+    prevent_initial_call=True
+)
+def toggle_jump_modal(jump_clicks, close_clicks, jump_to_clicks, is_open):
+    ctx = callback_context
+    if not ctx.triggered:
+        return is_open
+    
+    triggered_id = ctx.triggered[0]["prop_id"]
+    
+    if "jump-button" in triggered_id:
+        return not is_open
+    elif "close-jump-modal" in triggered_id:
+        return False
+    elif "jump-to" in triggered_id:
+        return False
+    
+    return is_open
 
 # ----------------------------------------------------------------
 

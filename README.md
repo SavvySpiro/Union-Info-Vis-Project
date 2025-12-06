@@ -50,7 +50,7 @@ See requirements.txt for required libraries that may need to be installed.
 ## Tasks:
 - [ ] Miscellaneous/post-user feedback tasks
     - [ ] Add arrows to timeline for clarity N
-    - [ ] Label clickable boxes A
+    - [x] Label clickable boxes A
     - [x] Dynamic box configuration 
     - [ ] Add instructions on how to navigate to the more complicated vis N
     - [ ] More visualizations? AN
@@ -65,77 +65,77 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Contract loaded as background 
     - [x] Pop-ups working, showing visualization
     - [x] Pop-ups linked to correct spots in pdf
-- [ ] Boston area university stipends
-    - [ ] Title 
-    - [ ] Subtitle 
+- [x] Boston area university stipends
+    - [x] Title 
+    - [x] Subtitle 
     - [x] Legend 
-    - [ ] Color scheme 
-        - [ ] Make neu red and neutral others
-    - [ ] Annotations (ex: extra dotted lines, arrows)
-        - [ ] Make the line annotations just for 2024-25
-        - [ ] Add note about self reported data and reliability and avgs over time
-        - [ ] make the living wage a standout color
-    - [ ] Background N
-    - [ ] Axis labels
-        - [ ] y axis labels should be k
-        - [ ] x axis show ticks for every year
-    - [ ] Tooltips
-        - add year annotation on tooltip
+    - [x] Color scheme 
+        - [x] Make neu red and neutral others
+    - [x] Annotations (ex: extra dotted lines, arrows)
+        - [x] Make the line annotations just for 2024-25
+        - [x] Add note about self reported data and reliability and avgs over time
+        - [x] make the living wage a standout color
+    - [x] Background N
+    - [x] Axis labels
+        - [x] y axis labels should be k
+        - [x] x axis show ticks for every year
+    - [x] Tooltips
+        - [x] add year annotation on tooltip
     - [x] Data selection
 - [ ] Stipends by Department over Time
-    - [ ] Title
-    - [ ] Subtitle
-    - [ ] Legend
-        - [ ] Capitalize legend
-    - [ ] Color scheme
-        - [ ] choose better plotly color scheme
-    - [ ] Annotations (ex: extra dotted lines, arrows)
-        - [ ] Add living wage and poverty lines
-    - [ ] Background N
-    - [ ] Axis labels
-        - [ ] Make it K
-        - [ ] all years for x axis ticks
-    - [ ] Tooltips
-        - [ ] add year: year
+    - [x] Title
+    - [x] Subtitle
+    - [x] Legend
+        - [x] Capitalize legend
+    - [x] Color scheme
+        - [x] choose better plotly color scheme
+    - [x] Annotations (ex: extra dotted lines, arrows)
+        - [x] Add living wage and poverty lines
+    - [x] Background 
+    - [x] Axis labels
+        - [x] Make it K
+        - [x] all years for x axis ticks
+    - [x] Tooltips
+        - [x] add year: year
     - [x] Data selection
     - [ ] [WISHLIST] add option to filter by department vs college
     - [ ] [WISHLIST] add violin-plot style tubes on departments self report
-- [ ] benefits contract comparison
-    - [ ] Title
-    - [ ] Subtitle
-    - [ ] Legend
-        - [ ] Add legend showing what icon matches what benefit
-    - [ ] Color scheme
-        - [ ] Change red/green to blue/yellow bc red is NEU
-    - [ ] Labels
-        - [ ] Unique icons
-        - [ ] add icon to table title
-        - [ ] fix positions of schools on side table
+- [x] benefits contract comparison
+    - [x] Title
+    - [x] Subtitle
+    - [x] Legend
+        - [x] Add legend showing what icon matches what benefit
+    - [x] Color scheme
+        - [x] Change red/green to blue/yellow bc red is NEU
+    - [x] Labels
+        - [x] Unique icons
+        - [x] add icon to table title
+        - [x] fix positions of schools on side table
     - [x] Annotations (ex: extra dotted lines, arrows)
-    - [ ] Background 
-        - [ ] remove white line grid
+    - [x] Background 
+        - [x] remove white line grid
     - [x] Axis labels
-    - [ ] Tooltips
-        - [ ] on-hover show explanation of what a benefit means
-    - [ ] Data selection
-        - [ ] Filter by network buttons
+    - [x] Tooltips
+        - [x] on-hover show explanation of what a benefit means
+    - [x] Data selection
+        - [x] Filter by network buttons
 - [ ] Timeline
-    - [ ] Title
-    - [ ] Subtitle
-        - [ ] in instructions, make it obvious what you can click
-        - [ ] subtitle with instructions on subplot
+    - [x] Title
+    - [x] Subtitle
+        - [x] in instructions, make it obvious what you can click
+        - [x] subtitle with instructions on subplot
     - [x] Legend
     - [ ] Color scheme
         - [ ] union as red(?)
-    - [ ] Labels
-        - [ ] Labels are cut off 
-    - [ ] Annotations (ex: extra dotted lines, arrows)
-    - [ ] Background
+    - [x] Labels
+        - [x] Labels are cut off 
+    - [x] Annotations (ex: extra dotted lines, arrows)
+    - [x] Background
     - [x] Axis labels
-    - [ ] Axes 
-        - [ ] In the subtable, add current and end changes
+    - [x] Axes 
+        - [x] In the subtable, add current and end changes
     - [ ] Tooltips
-        - [ ] Add duration until next change
+        - [x] Add duration until next change
         - [ ] Per topic explanation tooltip stating what something is A
     - [ ] Dropdown to choose between topics
         - [ ] Add explanation of groupings

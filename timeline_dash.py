@@ -150,6 +150,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
     
     # Pull subset based on article group
     subset = negotiations[negotiations["Group"] == grouping_]
+    subset['Duration'] = (subset['End Date'] - subset['Start Date']).dt.days
     
     # Consistent color dict of parties involved
     colordict = {'Union':px.colors.qualitative.Plotly[0], 
@@ -163,7 +164,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
                 y="Article-wrap",
                 color="Party",
                 color_discrete_map=colordict,
-                custom_data=["Article", "Date", "Change Count"],
+                custom_data=["Article", "Date", "Change Count", "Duration"],
                 labels={"Article-wrap":""},
                 #opacity= # needs to be [0-1], search "Change Opacity"
                 #pattern_shape="Party",
@@ -173,6 +174,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
     timeline.update_traces(hovertemplate= 
                         "<b>Topic:</b> %{y} <br>" +
                         "<b>Date: </b> %{customdata[1]} <br>" +
+                        "<b>Duration until next change:</b> %{customdata[3]} days<br>" +  
                         "<b>Number of changes:</b> %{customdata[2]}<extra></extra>")
     
     # timeline.update_traces(
@@ -272,9 +274,10 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     
     # adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)),
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) + "<br>To see all of the changes, scroll down.",
         height = 500,
-        margin={'t':75,'l':0,'b':0,'r':0}
+        margin={'t':75,'l':0,'b':0,'r':0},
+        
     )
     # increasing font size
     fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
@@ -374,6 +377,7 @@ def time_changes_bars(negotiations:pd.DataFrame, article:str):
     fig.update_traces(hovertemplate= 
                         "<b>Party:</b> %{customdata[0]} <br>" +
                         "<b>Date: </b> %{x} <br>" +
+                        "<b>Duration until next change:</b> %{width|%d} days<br>" +
                         "<b>Number of changes:</b> %{y}<extra></extra>")
     
     # setting bar width to be a fixed size
@@ -463,13 +467,21 @@ def timeline_negotiations():
                 [html.Div([dcc.Graph(
                     figure = table,
                     id='changes-table'
-                )], style={'width': '63%', 'display': 'inline-block'}),
+                )], style={
+                    'width': '63%', 
+                    'display': 'inline-block',
+                    "overflowY": "scroll",
+                    'overflowX': 'hidden'
+                    }),
                 html.Div([dcc.Graph(
                     # figure = num_changes,
                     # id='changes-bar'
                     figure=final_changes,
                     id='final-changes'
-                )], style={'width': '35%', 'float':'right', 'display': 'inline-block'})
+                )], style={'width': '35%', 
+                           'float':'right', 
+                           'display': 'inline-block', 
+                           "overflowY": "scroll"})
                 ])
         ])
     
@@ -524,8 +536,8 @@ def timeline_negotiations():
     #         article = clickData["points"][0]['customdata'][0]
     #         return time_changes_bars(negotiations, article)
         
-    title = "Timeline of Contract Negotiations"
-    subtitle = ""
+    title = "How have contract negotiations progressed over time?"
+    subtitle = "Use the dropdown to filter by topic group. Click on a bar in the timeline to see the specific changes made to that article on that date."
     
     # NOTE: removed tl bars callback temporarily
     return layout, [tl_slidergroup_callback, tl_table_callback, tl_final_callback], title, subtitle

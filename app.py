@@ -382,9 +382,9 @@ def open_popup(*args):
         if content.get("subtitle"):
             title_component = html.Div([
                 html.Div(content.get("title", "Main Title"), 
-                        style={"fontSize": "1.25rem", "marginBottom": "2px"}),
+                        style={"fontSize": "3rem", "marginBottom": "2px"}),
                 html.Div(content.get("subtitle", ""), 
-                        style={"fontSize": "0.9rem", "color": "#6c757d", "fontWeight": "normal"})
+                        style={"fontSize": "2rem", "color": "#6c757d", "fontWeight": "normal"})
             ])
         else:
             title_component = content.get("title", "Main Title")
@@ -486,6 +486,7 @@ def toggle_jump_modal(jump_clicks, close_clicks, jump_to_clicks, is_open):
         return False
     
     return is_open
+
 
 # ----------------------------------------------------------------
 

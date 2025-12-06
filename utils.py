@@ -102,7 +102,7 @@ benefit_icons = {
     # Maternity/Family
     'Maternity Care': '🤰',
     'Childbirth/Delivery': '👶',
-    'Birth Control': '💊',
+    'Birth Control': '👶',
     'Infertility Treatment': '👨‍👩‍👧',
     
     # Alternative Medicine

@@ -1,7 +1,8 @@
 import pandas as pd
 import plotly.graph_objects as go
-from dash import dcc, html, Input, Output
+from dash import State, dcc, html, Input, Output
 import numpy as np
+import dash_bootstrap_components as dbc
 import utils
 import re
 
@@ -12,7 +13,20 @@ def benefits():
     # Get unique universities and benefits
     universities = benefits_df['University'].unique()
     
-    # Define key benefits to display (you can change this and itll automatically populate)
+    print(universities)
+
+    networks = {
+        'MIT': 'Blue Cross Blue Shield',
+        'Harvard': 'Blue Cross Blue Shield',
+        'Northeastern': 'Blue Cross Blue Shield',
+        'Boston University': 'Aetna',
+        'Tufts': 'United Healthcare',
+        'UMass Boston': 'Blue Cross Blue Shield'
+    }
+
+    benefits_df['Network'] = benefits_df['University'].map(networks)
+    
+    # Define key benefits to display
     key_benefits = [
         'Deductible',
         'Out-of-Pocket Maximum',
@@ -40,13 +54,24 @@ def benefits():
     # Create the Dash layout with side-by-side graphs
     div = html.Div([
         html.Div([
+            html.Label("Filter by Network:", style={'fontWeight': 'bold', 'marginRight': '15px'}),
+            dcc.RadioItems(
+                id='benefits-network-filter',
+                options=[{'label': 'All', 'value': 'All'}] + [{'label': net, 'value': net} for net in sorted(set(networks.values()))],
+                value='All',
+                inline=True,
+                labelStyle={'marginRight': '20px', 'cursor': 'pointer'}
+            )
+        ], style={'marginBottom': '20px', 'padding': '10px', 'backgroundColor': '#f5f5f5', 'borderRadius': '5px'}),
+        
+        html.Div([
             # Left side - benefits unit chart
             html.Div([
                 dcc.Graph(
                     id='benefits-unit-chart',
                     figure=benefits_fig_main,
                     config={'displayModeBar': False},
-                    clickData={'points': [{'customdata': ['Deductible']}]}  # Default selection
+                    clickData={'points': [{'customdata': ['Deductible']}]}
                 )
             ], style={'width': '68%', 'display': 'inline-block', 'verticalAlign': 'top', 'overflow': 'visible', 'zIndex': 1000}),
             
@@ -56,7 +81,8 @@ def benefits():
                     id='benefits-details-chart',
                     figure=benefits_details_fig,
                     config={'displayModeBar': False}
-                )
+                ),
+                html.Div(id='benefits-legend-container')  # Make legend dynamic too
             ], style={'width': '30%', 'display': 'inline-block', 'verticalAlign': 'top', 'padding':'none'})
         ], style={
             'backgroundColor': 'white',
@@ -68,31 +94,64 @@ def benefits():
         })
     ])
 
-    # Create callback function for adjusting the bar chart with the selected benefits
+    # NEW CALLBACK: Filter by network
+    def network_filter_callback(app):
+        @app.callback(
+            [Output('benefits-unit-chart', 'figure'),
+             Output('benefits-details-chart', 'figure'),
+             Output('benefits-legend-container', 'children')],
+            [Input('benefits-network-filter', 'value')],
+            [State('benefits-unit-chart', 'clickData')],
+            suppress_callback_exceptions=True
+        )
+        def update_by_network(selected_network, clickData):
+            # Filter universities by network
+            if selected_network == 'All':
+                filtered_unis = universities
+            else:
+                filtered_unis = [uni for uni, net in networks.items() if net == selected_network]
+            
+            # Filter benefits dataframe
+            filtered_df = benefits_df_filtered[benefits_df_filtered['University'].isin(filtered_unis)]
+            
+            # Get selected benefit from clickData
+            benefit_name = 'Deductible'  # default
+            if clickData and 'points' in clickData:
+                benefit_name = clickData['points'][0]['customdata'][0]
+            
+            # Update all three components
+            new_unit_chart = benefits_fig(filtered_unis, filtered_df)
+            new_details = benefit_details(filtered_unis, filtered_df, benefit_name)
+            new_legend = benefits_legend(filtered_unis, filtered_df)
+            
+            return new_unit_chart, new_details, new_legend
+
+    # EXISTING CALLBACK: Update details when clicking
     def benefits_details_callback(app):
         @app.callback(
-            Output('benefits-details-chart', 'figure'),
+            Output('benefits-details-chart', 'figure', allow_duplicate=True),
             Input('benefits-unit-chart', 'clickData'),
+            State('benefits-network-filter', 'value'),
             prevent_initial_call=True,
             suppress_callback_exceptions=True
         )
-        
-        def update_details(clickData):
-            # Extract benefit name from the clicked point
-            # The hovertemplate has the benefit name in it
-            point_data = clickData["points"][0]
+        def update_details(clickData, selected_network):
+            # Filter universities by network
+            if selected_network == 'All':
+                filtered_unis = universities
+            else:
+                filtered_unis = [uni for uni, net in networks.items() if net == selected_network]
             
-            # Get the benefit name from customdata
-            # We need to modify benefits_fig to include benefit name in customdata
-            benefit_name = point_data['customdata'][0]
+            filtered_df = benefits_df_filtered[benefits_df_filtered['University'].isin(filtered_unis)]
             
-            return benefit_details(universities, benefits_df_filtered, benefit_name)
+            benefit_name = clickData["points"][0]['customdata'][0]
+            return benefit_details(filtered_unis, filtered_df, benefit_name)
     
-    title = 'University Health Insurance Benefits Comparison'
-    subtitle = 'Click on benefit icons to see detailed comparisons'
+    title = 'Compare Northeastern with Other Universities on Health Insurance Benefits'
+    subtitle = 'To see details for each benefit, hover over the icons. To see comparisons, click on an icon.'
     
-    # Return layout and callback list just like timeline does
-    return div, [benefits_details_callback], title, subtitle
+    # Return BOTH callbacks
+    return div, [network_filter_callback, benefits_details_callback], title, subtitle
 
 # main figure, unit chart with the benefits
 def benefits_fig(universities, benefits_df_filtered):
@@ -136,8 +195,8 @@ def benefits_fig(universities, benefits_df_filtered):
         negative_spacing = 1
     
     # Colors for yes/no
-    color_yes = '#2ecc71'
-    color_no = '#e74c3c'
+    color_yes = "#1c7cfa"
+    color_no = "#f7af3b"
     
     # Calculate positions for each university
     uni_positions = {uni: i for i, uni in enumerate(universities)}
@@ -158,7 +217,7 @@ def benefits_fig(universities, benefits_df_filtered):
             # Get icon
             icon = utils.benefit_icons.get(benefit, '❓')
             
-            # Set position and color based on coverage
+            # Set position and color based on coverage   
             if has_benefit:
                 y = y_pos_positive
                 y_pos_positive += positive_spacing
@@ -198,24 +257,24 @@ def benefits_fig(universities, benefits_df_filtered):
     y_max = positive_range + y_buffer if max_positive > 0 else 2
     
     # Add background shapes for upper and lower sections
-    # Lower section (red background)
+    # Lower section ( warm yellow ) background)
     fig.add_shape(
         type="rect",
         xref="paper", yref="y",
         x0=0, y0=y_min,
         x1=1, y1=0,
-        fillcolor="rgba(255, 200, 200, 0.3)",  # Light red with transparency
+        fillcolor="rgba(255, 200, 100, 0.3)",  # Light warm yellow with transparency
         line=dict(width=0),
         layer="below"
     )
 
-    # Upper section (green background)
+    # Upper section (blue background)
     fig.add_shape(
         type="rect",
         xref="paper", yref="y",
         x0=0, y0=0,
         x1=1, y1=y_max,
-        fillcolor="rgba(200, 255, 200, 0.3)",  # Light green with transparency
+        fillcolor="rgba(100, 150, 255, 0.3)",  # Light blue with transparency
         line=dict(width=0),
         layer="below"
     )
@@ -256,7 +315,8 @@ def benefits_fig(universities, benefits_df_filtered):
             tickmode='array',
             title='',
             tickfont=dict(size=14),
-            range=[-0.5, len(universities) - 0.5]
+            range=[-0.5, len(universities) - 0.5],
+            showgrid=False  # Add this
         ),
         # assign y ticks to calculated height of the scatter
         yaxis=dict(
@@ -264,10 +324,11 @@ def benefits_fig(universities, benefits_df_filtered):
             zeroline=True,
             zerolinewidth=2,
             zerolinecolor='#666',
-            gridcolor='rgba(224, 224, 224, 0.5)',  # More subtle grid
+            gridcolor='rgba(224, 224, 224, 0.5)',
             tickvals=[],
             range=[y_min, y_max],
-            fixedrange=True  # Prevent zooming which can mess up spacing
+            fixedrange=True,
+            showgrid=False  # Add this
         ),
         # label and hovering details
         plot_bgcolor='white',
@@ -280,6 +341,10 @@ def benefits_fig(universities, benefits_df_filtered):
             font_family="Arial"
         )
     )
+
+    # remove gridlines (keep these but add showgrid above too)
+    fig.update_xaxes(showgrid=False, zeroline=False)
+    fig.update_yaxes(showgrid=False)
 
     # center 0 line
     fig.add_hline(y=0, line_dash="solid", line_color="#666", line_width=2)
@@ -344,12 +409,19 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
         return fig
     
     df = pd.DataFrame(benefit_data)
-    
+
+#    Sort universities alphabetically
+    df = df.sort_values(by='University')
+
+    # Get the sorted university order to enforce consistency
+    university_order = sorted(universities)  # Use the input universities list
+
     # Check if we have numerical values to compare
     has_numerical = any(df['HasValue'])
 
     numerical_df = df[df['HasValue']].copy()
     no_value_df = df[~df['HasValue']].copy()
+
     
     if has_numerical:
         
@@ -365,14 +437,16 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
                         'Emergency Room', 'Urgent Care', 'Specialist Visit', 
                         'Prescription Drugs', 'Imaging', 'Diagnostic Tests']
         is_cost_benefit = any(cost_word in selected_benefit for cost_word in cost_benefits)
+
+        selected_icon = utils.benefit_icons.get(selected_benefit, '❓')
         
         # Determine colors for numerical values
         if is_cost_benefit:
-            # For costs: below mean is good (green), above is bad (red)
-            bar_colors = ['#2ecc71' if v <= mean_value else '#e74c3c' for v in numerical_df['Value']]
+            # For costs: below mean is good (blue), above is bad (yellow)
+            bar_colors = ['#1c7cfa' if v <= mean_value else '#f7af3b' for v in numerical_df['Value']]
         else:
-            # For coverage amounts: above mean is good (green), below is bad (red)
-            bar_colors = ['#2ecc71' if v >= mean_value else '#e74c3c' for v in numerical_df['Value']]
+            # For coverage amounts: above mean is good (blue), below is bad (yellow)
+            bar_colors = ['#1c7cfa' if v >= mean_value else '#f7af3b' for v in numerical_df['Value']]
         
         # Format text based on value type
         if value_type == 'dollar':
@@ -402,8 +476,8 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
         
         # Add bars for universities without values (if any)
         if not no_value_df.empty:
-            # Color for no coverage: green for cost benefits, red for coverage benefits
-            no_coverage_color = '#2ecc71' if is_cost_benefit else '#e74c3c'
+            # Color for no coverage: blue for cost benefits, yellow for coverage benefits
+            no_coverage_color = '#1c7cfa' if is_cost_benefit else '#f7af3b'
             
             fig.add_trace(go.Bar(
                 x=no_value_df['University'],
@@ -427,15 +501,22 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
         )
         
         fig.update_layout(
-            title=utils.wrap_text(f'{selected_benefit} Comparison', width = 30),
+            title=utils.wrap_text(f'{selected_icon} {selected_benefit} Comparison', width = 30),
             xaxis_title='University',
             yaxis_title=y_title,
             height=400,
             width=360,
             showlegend=False,
             bargap=0.2,
-            margin = {'t':75,'l':5,'b':0,'r':0}
+            margin = {'t':75,'l':5,'b':0,'r':0},
+            xaxis=dict(
+                categoryorder='array',
+                categoryarray=university_order  # Force this order
+            )
         )
+        # remove gridlines
+        fig.update_yaxes(showgrid=False)
+        fig.update_xaxes(categoryorder='array', categoryarray=university_order)
     else:
         # Coverage status chart (no numerical values found)
         if not no_value_df.empty:
@@ -460,8 +541,75 @@ def benefit_details(universities, benefits_df_filtered, selected_benefit='Deduct
             showlegend=False,
             margin = {'t':75,'l':15,'b':0,'r':0}
         )
+
+        fig.update_xaxes(categoryorder='array', categoryarray=university_order)
     
     return fig
+
+
+def benefits_legend(universities, benefits_df_filtered):
+    """
+    Creates a legend for the benefits unit chart with styled tooltips
+    """
+    all_icons = utils.benefit_icons
+    
+    benefit_descriptions = {
+        'Deductible': 'The amount you pay out-of-pocket before insurance starts covering costs',
+        'Out-of-Pocket Maximum': 'The most you will pay in a year; after this, insurance covers 100%',
+        'Primary Care Visit': 'Cost to see your regular doctor for routine checkups and non-emergency care',
+        'Emergency Room': 'Cost for emergency medical care at a hospital emergency department',
+        'Diagnostic Tests (X-ray/Blood)': 'Cost for medical tests like X-rays and blood work ordered by your doctor',
+        'Imaging (CT/MRI/PET)': 'Cost for advanced imaging scans like CT, MRI, or PET scans',
+        'Mental Health Outpatient': 'Cost for therapy or counseling sessions with mental health professionals',
+        'Prescription Drugs (Generic)': 'Cost for generic (non-brand name) prescription medications',
+        'Birth Control': 'Coverage for contraceptive medications and devices',
+        'Vision Exam (Adult)': 'Cost for routine eye exams to check vision and eye health',
+        'Eyeglasses (Adult)': 'Coverage or discount for prescription eyeglasses or frames',
+        'Dental (Adult)': 'Coverage for dental care including cleanings, fillings, and procedures'
+    }
+    
+    legend_items = []
+    tooltips = []
+    
+    for idx, (benefit, icon) in enumerate(all_icons.items()):
+        if benefit in benefits_df_filtered['Benefit'].values:
+            item_id = f"benefit-legend-{idx}"
+            
+            legend_items.append(
+                html.Div([
+                    html.Span(icon, style={'fontSize': '12px', 'marginRight': '5px'}),
+                    html.Span(benefit, style={'fontSize': '10px'})
+                ], 
+                id=item_id,
+                style={
+                    'display': 'flex', 
+                    'alignItems': 'center', 
+                    'marginBottom': '8px',
+                    'cursor': 'help'
+                })
+            )
+            
+            tooltips.append(
+                dbc.Tooltip(
+                    benefit_descriptions.get(benefit, ''),
+                    target=item_id,
+                    placement="top"
+                )
+            )
+    
+    return html.Div([
+        html.Div(
+            legend_items, 
+            style={
+                'marginTop': '20px',
+                'marginLeft': '20%',
+                'display': 'grid',
+                'gridTemplateColumns': '1fr 1fr',
+                'gap': '10px'
+            }
+        ),
+        *tooltips  # Add all tooltips
+    ])
 
 def extract_numerical_values(details_text):
     """

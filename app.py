@@ -110,8 +110,12 @@ except ValueError as e:
 # ----------------------------------------------------------------
 def build_page_with_overlays(img_src, page_index):
     """
-    Create one PDF page (an image) with its overlay hotspots
+    Create one PDF page (an image) with its overlay hotspots and title text boxes
     """
+    # Calculate how far left the container is from the screen edge
+    # Container has: margin 20px auto, padding 0 15px, maxWidth 1200px
+    # So the offset is: (100vw - 1200px) / 2 when centered, plus the 15px padding
+    
     return html.Div(
         [
             # pdf page image
@@ -119,53 +123,112 @@ def build_page_with_overlays(img_src, page_index):
                 src=img_src,
                 style={
                     "width": "100%",
-                    "height": "auto",  # Important! Maintains aspect ratio
+                    "height": "auto",
                     "display": "block",
                 },
             ),
             *[
-                # hotspots using percentage positioning
-                html.Div(
-                    id=hotspot["id"],
-                    n_clicks=0,
-                    style={
-                        "position": "absolute",
-                        "top": f"{hotspot['top']}%",      
-                        "left": f"{hotspot['left']}%",    
-                        "width": f"{hotspot['width']}%",  
-                        "height": f"{hotspot['height']}%", 
-                        "cursor": "pointer",
-                        "backgroundColor": "rgba(255, 255, 0, 0.3)",
-                        "border": "2px solid rgba(255,200,0,0.4)",
-                    },
-                )
+                html.Div([
+                    # Text box on the left
+                    html.Div(
+                        content_mapping.get(hotspot["id"], {}).get("title", ""),
+                        style={
+                            "position": "absolute",
+                            "top": f"{hotspot['top']}%",
+                            "right": f"{100 - hotspot['left']}%",  # Right edge at hotspot
+                            "width": f"calc(20px + max(0px, (100vw - 1230px) / 2) + {hotspot['left']}%)",  # From screen edge to hotspot
+                            "height": f"{hotspot['height']}%",
+                            "marginLeft": f"calc(-20px - max(0px, (100vw - 1230px) / 2))",  # Pull left to screen edge
+                            "marginRight": "5px",  # Pull it left
+                            "display": "flex",
+                            "alignItems": "center",
+                            "justifyContent": "center",
+                            "padding": "10px",
+                            "fontSize": "1.2rem",
+                            "fontFamily": "Source Sans Pro, sans-serif",
+                            "fontWeight": "bold",
+                            "color": "#990000",
+                            "textAlign": "center",
+                            "wordWrap": "break-word",
+                            "overflowWrap": "break-word",
+                            # "backgroundColor": "rgba(255, 0, 0, 0.2)", #for debugging
+                            "boxSizing": "border-box",
+                        }
+                    ),
+                    # Hotspot (clickable area)
+                    html.Div(
+                        id=hotspot["id"],
+                        n_clicks=0,
+                        style={
+                            "position": "absolute",
+                            "top": f"{hotspot['top']}%",      
+                            "left": f"{hotspot['left']}%",    
+                            "width": f"{hotspot['width']}%",  
+                            "height": f"{hotspot['height']}%", 
+                            "cursor": "pointer",
+                            "backgroundColor": "rgba(255, 255, 0, 0.3)",
+                            "border": "2px solid rgba(255,200,0,0.4)",
+                            "zIndex": "10",
+                        },
+                    ),
+                ])
                 for hotspot in hotspot_dict.get(page_index, [])
             ],
         ],
         style={
             "position": "relative",
-            "maxWidth": "1200px",  # Optional: set a max width
+            "maxWidth": "1200px",
             "margin": "20px auto",
-            "width": "100%",       # Changed from 70%
-            "padding": "0 15px",   # Add some padding instead
+            "width": "100%",       
+            "padding": "0 15px",
+            "boxSizing": "border-box",
+            "overflow": "visible",
         },
     )
+
+title = "See What's at Stake: Northeastern/GENU-UAW Contract Proposal Visualized"
+subtitle = "Unlike traditional contract negotiations which are article-by-article, Northeastern released a complete 'Final' contract proposal all at once. This dashboard visualizes key provisions to help union members understand what's being offered." 
+instructions = "Click on the highlighted sections of the proposal pages below to explore interactive visualizations that break down important aspects of the contract like stipend trends, departmental averages, negotiation timelines, and insurance benefits summaries."
 
 app.layout = html.Div(
     [
     # header and explanation
         html.Div(
-            [html.Header("The Northeastern/GENU-UAW Contract as it currently stands",
+            [html.Header(title,
                 style={
-                "fontSize": "2rem",
+                "fontFamily": "Source Sans Pro, sans-serif", #matches genu font
+                "fontSize": "3rem",
                 "fontWeight": "bold",
-                "marginBottom": "10px"
+                "marginBottom": "10px",
+                "textAlign": "center",
+                "textDecoration": "underline",
+                "textDecorationThickness": "4px",
             }),
             html.Div(
-                "The Student Union has been in contract negotiations with Northeastern University since April 2023. " +
-                "<br>Below are visualizations that highlight key aspects of the current contract proposal, including stipend comparisons, departmental averages, negotiation timelines, and benefits summaries. "+
-                "<zbr>Click on the highlighted areas in the contract pages to explore these insights.",
+                subtitle,
+                style={
+                    "fontFamily": "Source Sans Pro, sans-serif", #matches genu font
+                    "fontSize": "2rem",
+                    "color": "#666",
+                    "marginBottom": "15px",
+                    "marginLeft": "20px",
+                    "marginRight": "20px",
+                }
+            ),
+            html.Div(
+                instructions,
+                style={
+                    "fontFamily": "Source Sans Pro, sans-serif", #matches genu font
+                    "fontSize": "2rem",
+                    "marginBottom": "20px",
+                    "marginLeft": "20px",
+                    "marginRight": "20px",
+                    "whiteSpace": "pre-line",
+                    "color": "#990000"
+                }
             )]),
+        # horizontal line
+        html.Hr(),
         html.Div(
             
             [

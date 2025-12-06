@@ -175,18 +175,18 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
                         "<b>Date: </b> %{customdata[1]} <br>" +
                         "<b>Number of changes:</b> %{customdata[2]}<extra></extra>")
     
-    timeline.update_traces(
-        marker = dict(
-            pattern = dict(
-                path = "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z",
-                # path = [
-                #     "M0 0C6 2.5875 12 4.5 21 8.8875 12 13.5 7.8 14.5687 0 18c5.7-1.9125 18-4.5 27-8.9437C18 4.5 9.3 2.7 0 0Z",
-                #     "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z"],
-                size=23,
-                solidity=0.7
-            )
-        )
-    )
+    # timeline.update_traces(
+    #     marker = dict(
+    #         pattern = dict(
+    #             path = "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z",
+    #             # path = [
+    #             #     "M0 0C6 2.5875 12 4.5 21 8.8875 12 13.5 7.8  14.5687 0 18c5.7-1.9125 18-4.5 27-8.9437C18 4.5 9.3 2.7 0 0Z",
+    #             #     "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z"],
+    #             size=23,
+    #             solidity=0.7
+    #         )
+    #     )
+    # )
     
     # Adjusting x-axis to be consistently spaced
     present_dates=set(negotiations['Start Date']).union(set(negotiations["End Date"]))

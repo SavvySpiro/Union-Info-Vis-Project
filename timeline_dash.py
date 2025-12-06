@@ -14,7 +14,7 @@ def timeline_data():
     negotiations["Start Date"] = pd.to_datetime(negotiations["Date"])
     
     # Sort negotiations by article and date to ensure proper ordering
-    negotiations = negotiations.sort_values(["Article", "Start Date"])
+    negotiations = negotiations.sort_values(["Article", "Start Date"], ascending=True)
     
     # Add "end" date for each timeline segment
     def next_end(df:pd.DataFrame, article:str, start:pd.Timestamp):
@@ -44,41 +44,53 @@ def timeline_data():
         'No Strike No Lockout':"Union (General)", 
         'Union Officers and Stewards':"Union (General)",
         'Recognition':"Union (General)",
+        
+        
         'Bargaining Ground Rules':"Union (Legal)", 
         'Successorship':"Union (Legal)", 
         'Comprehensive and Complete Agreement':"Union (Legal)", 
         'Severability':"Union (Legal)", 
         'Grievance and Arbitration':"Union (Legal)",
-        'Employment Records':"Employment 1", 
-        'Discipline and Dismissal':"Employment 1",
-        'Sub-Contracting':"Employment 1", 
-        'Retirement':"Employment 1", 
-        'Hourly Assignments':"Employment 1",
-        'Training':"Employment 3",
-        'Job Postings':"Employment 2", 
-        'International Worker Rights':"Employment 2", 
-        'Management Rights':"Employment 2", 
-        'Titles and Classifications':"Employment 2", 
-        'Workspace and Materials':"Employment 2",
-        'Artificial Intelligence':"Employment 3", 
-        'Automation':"Employment 3", 
-        'Appointments and Reappointments':"Employment 3",
-        'Appointment Security':"Employment 3",
+        
+        
+        'Hourly Assignments':"Employment (Requirements)",
+        'Titles and Classifications':"Employment (Requirements)",
+        'Employment Records':"Employment (Requirements)",
+        'Appointments and Reappointments':"Employment (Requirements)",
+        'Management Rights':"Employment (Requirements)",
+        'Training':"Employment (Requirements)",
+        
+        
+        'Discipline and Dismissal':"Employment (Rights)",
+        'Job Postings':"Employment (Rights)",
+        'International Worker Rights':"Employment (Rights)",
+        'Workspace and Materials':"Employment (Rights)",
+        'Holidays':"Employment (Rights)",
+        'Travel':"Employment (Rights)",
+        
+        
+        'Artificial Intelligence':"Employment (Protections)", 
+        'Automation':"Employment (Protections)",
+        'Sub-Contracting':"Employment (Protections)",
+        'Prohibition Against Discrimination and Harassment':"Employment (Protections)",
+        'Appointment Security':"Employment (Protections)",
+        'Health and Safety':"Employment (Protections)",
+        'Accessibility':"Employment (Protections)",
+        
+        
         'Housing':"Benefits", 
         'Parking and Transit':"Benefits", 
         'Relocation Assistance':"Benefits", 
         'Tax Assistance':"Benefits", 
         'Vacation and Personal Time':"Benefits", 
-        'Professional Development':"Benefits", 
-        'Travel':"Other",
+        'Professional Development':"Benefits",
+        'Retirement':"Benefits",
+        
+        
         'Tuition and Fees':"Academic", 
         'FERPA Waiver Form':"Academic",
         'Intellectual Property':"Academic",
-        'Professional and Academic Freedom':"Academic",
-        'Accessibility':"Other", 
-        'Prohibition Against Discrimination and Harassment':"Other", 
-        'Health and Safety':"Benefits",
-        'Holidays':"Other"
+        'Professional and Academic Freedom':"Academic"
     }
 
     def category(article:str):
@@ -145,7 +157,7 @@ def timeline_data():
 '''--------------------- Timeline Figure ---------------------'''
 
 def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp], 
-                         range_:list[pd.Timestamp], grouping_:str = "Benefits"):
+                         range_:list[pd.Timestamp], grouping_:str = "Employment (Requirements)"):
     """
     Creates the timeline figure for contract negotiations
 
@@ -212,15 +224,17 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
             gridcolor = "rgba(0, 4, 255, 0.05)"
         ),
         margin={'t':75,'l':0,'b':0,'r':2},
-        plot_bgcolor = "rgba(0, 4, 255, 0.02)"
+        plot_bgcolor = "rgba(0, 4, 255, 0.02)",
+        showlegend=False
     )
     
-    timeline.update_legends(
-        title = "Party:",
-        orientation = "h",
-        yanchor = "bottom",
-        y = 1.02,
-    )
+    # timeline.update_legends(
+    #     title = "Party:",
+    #     orientation = "h",
+    #     yanchor = "bottom",
+    #     y = 1.02,
+    # )
+    
     # Adding click option for linked charts
     timeline.update_layout(
         clickmode = 'event+select'
@@ -279,9 +293,9 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     
     # adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) + "<br>To see all of the changes, scroll down.",
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) + "<br><sup>To see all of the changes, scroll down.</sup>",
         height = 500,
-        margin={'t':75,'l':0,'b':0,'r':0},
+        margin={'t':90,'l':0,'b':0,'r':0},
         
     )
     # increasing font size
@@ -310,10 +324,10 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
     # selecting party for color, keeping consistent with established color theme
     # but lightening it a little so that the text shows up and is readable
     party = final_changes["Party"].unique().tolist()
-    if len(party) > 1 or party == 'Tentative Agreement':
+    if len(party) > 1 or party[0] == 'Tentative Agreement':
         head_color = 'aquamarine',
         header_title = f"<b>Current Version (Tentative Agreement, {ld_formatted})</b>"
-    elif party == 'Union':
+    elif party[0] == 'Union':
         head_color = 'cornflowerblue',
         header_title = f"<b>Current Version (Union, {ld_formatted})</b>"
     else:
@@ -335,7 +349,7 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
     fig.update_layout(
         title=" ", # Most recent changes
         height = 500,
-        margin={'t':75,'l':0,'b':0,'r':0}
+        margin={'t':90,'l':0,'b':0,'r':0}
     )
     # increasing font size
     fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
@@ -427,17 +441,17 @@ def timeline_negotiations():
     TOPICS = sorted(negotiations["Group"].unique())
     
     # Default timeline is all dates, with a selected group
-    # Group has Health and Safety in it, to match the default linked charts
+    # Group has 'Appointments and Reappointments' in it, to match the default linked charts
     timeline = negotiation_timeline(negotiations, TIMES, 
                                     [negotiations["Start Date"].min(), 
-                                    negotiations["End Date"].max()], "Benefits")
+                                    negotiations["End Date"].max()], "Employment (Requirements)")
     
     # Picked a starting table to show
-    table = time_changes_table(negotiations, "Health and Safety", '8/26/2024')
+    table = time_changes_table(negotiations, 'Appointments and Reappointments', '3/15/2024')
     
     # matching default bar chart to the changes table
-    #num_changes = time_changes_bars(negotiations, "Health and Safety")
-    final_changes = final_changes_table(negotiations, "Health and Safety")
+    #num_changes = time_changes_bars(negotiations, 'Appointments and Reappointments')
+    final_changes = final_changes_table(negotiations, 'Appointments and Reappointments')
     
     # Dash layout
     layout = html.Div([
@@ -445,7 +459,7 @@ def timeline_negotiations():
         # group dropdown select
         dcc.Dropdown(
             options = sorted(negotiations["Group"].unique().tolist()),
-            value="Benefits", 
+            value="Employment (Requirements)", 
             id='timeline-group')], style={'width': '49%', 'display': 'inline-block'}),
         # main timeline graph
         dcc.Graph(

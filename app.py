@@ -250,7 +250,7 @@ app.layout = html.Div(
             [html.Header(title,
                 style={
                 "fontFamily": "Source Sans Pro, sans-serif", #matches genu font
-                "fontSize": "3rem",
+                "fontSize": "2rem",
                 "fontWeight": "bold",
                 "marginBottom": "10px",
                 "textAlign": "center",
@@ -261,7 +261,7 @@ app.layout = html.Div(
                 subtitle,
                 style={
                     "fontFamily": "Source Sans Pro, sans-serif", #matches genu font
-                    "fontSize": "2rem",
+                    "fontSize": "1.5rem",
                     "color": "#666",
                     "marginBottom": "15px",
                     "marginLeft": "20px",
@@ -272,7 +272,7 @@ app.layout = html.Div(
                 instructions,
                 style={
                     "fontFamily": "Source Sans Pro, sans-serif", #matches genu font
-                    "fontSize": "2rem",
+                    "fontSize": "1.5rem",
                     "marginBottom": "20px",
                     "marginLeft": "20px",
                     "marginRight": "20px",
@@ -382,9 +382,9 @@ def open_popup(*args):
         if content.get("subtitle"):
             title_component = html.Div([
                 html.Div(content.get("title", "Main Title"), 
-                        style={"fontSize": "3rem", "marginBottom": "2px"}),
+                        style={"fontSize": "2rem", "marginBottom": "2px"}),
                 html.Div(content.get("subtitle", ""), 
-                        style={"fontSize": "2rem", "color": "#6c757d", "fontWeight": "normal"})
+                        style={"fontSize": "1.5rem", "color": "#6c757d", "fontWeight": "normal"})
             ])
         else:
             title_component = content.get("title", "Main Title")

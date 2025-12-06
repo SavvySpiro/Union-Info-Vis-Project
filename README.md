@@ -23,23 +23,23 @@ See requirements.txt for required libraries that may need to be installed.
 - [ ] 12/10 5:pm paper
 
 ## Last Minute To-Do
-- [ ] Bigger titles and subtitles A
+- [x] Bigger titles and subtitles A
 - [ ] Fix timeline vis N
-    - [ ] Comparing changes?
+    - [x] Comparing changes?
     - [ ] Explaining what "no change" means OR filter out with regex
-    - [ ] Drop bar chart, add another column to table to show previous changes
-    - [ ] On main timeline, opacity = # changes?
+    - [x] Drop bar chart, add another column to table to show previous changes
+    - [x] On main timeline, opacity = # changes?
 - [ ] Update stipend visualizations A
-    - [ ] Make the living wage/poverty line pop out more
-    - [ ] Vertical line was confusing?
-- [ ] Benefits A
-    - [ ] Unique emojis
-    - [ ] Legend at bottom of what emojis are
-    - [ ] Include corresponding emoji in title of bar chart
+    - [x] Make the living wage/poverty line pop out more
+    - [x] Vertical line was confusing?
+- [x] Benefits A
+    - [x] Unique emojis
+    - [x] Legend at bottom of what emojis are
+    - [x] Include corresponding emoji in title of bar chart
 - [ ] Write instructions for use at top N
-- [ ] Table of contents at top/links to diff vis boxes A
+- [x] Table of contents at top/links to diff vis boxes A
 - [ ] More explanations for vis/longer captions (e.g. explain groupings in timeline) N
-- [ ] Titles on boxes A
+- [x] Titles on boxes A
 - [ ] Write paper AN
 - [ ] Create demo (Alenna) 
 - [ ] Write presentation/slide deck ANNNNN
@@ -57,8 +57,8 @@ See requirements.txt for required libraries that may need to be installed.
     - [ ] Write paper AN
     - [ ] Do demo A
     - [ ] Do presentation N
-    - [ ] Desaturated background on all charts N
-    - [ ] Deliberate abt color scheme AN
+    - [x] Desaturated background on all charts N
+    - [x] Deliberate abt color scheme AN
 
 - [ ] Dashboard set up
     - [x] Title and subtitle for whole project
@@ -125,8 +125,8 @@ See requirements.txt for required libraries that may need to be installed.
         - [x] in instructions, make it obvious what you can click
         - [x] subtitle with instructions on subplot
     - [x] Legend
-    - [ ] Color scheme
-        - [ ] union as red(?)
+    - [x] Color scheme
+        - [ ] union as red(?) (rejected; red for NEU, blue for union, green for agreement)
     - [x] Labels
         - [x] Labels are cut off 
     - [x] Annotations (ex: extra dotted lines, arrows)
@@ -140,11 +140,11 @@ See requirements.txt for required libraries that may need to be installed.
     - [ ] Dropdown to choose between topics
         - [ ] Add explanation of groupings
         - [ ] For 3 employment groups, give explanation and theme
-    - [ ] Wrap topic titles
+    - [x] Wrap topic titles
     - [ ] Arrow to either axis or bars
     - [ ] Add explicit scrollbar to the table or subtitle explaining it
     - [ ] Add text explanation of "no change"
-    - [ ] Sub-table 
-        - [ ] add second column for "final"
+    - [x] Sub-table 
+        - [x] add second column for "final"
 - [ ] [WISHLIST] Comparison of visa benefits 
 

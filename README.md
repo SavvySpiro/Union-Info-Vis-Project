@@ -61,6 +61,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [ ] Deliberate abt color scheme AN
 
 - [ ] Dashboard set up
+    - [x] Title and subtitle for whole project
     - [x] Contract loaded as background 
     - [x] Pop-ups working, showing visualization
     - [x] Pop-ups linked to correct spots in pdf

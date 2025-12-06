@@ -111,7 +111,12 @@ def timeline_data():
         return counts[(article, start.strftime('%Y-%m-%d'))]
     
     negotiations["Change Count"] = negotiations.apply(lambda x: changes(change_count, x["Article"], x["Start Date"]), axis=1)
-    # negotiations["Change %"] for mapping opacity!!!
+    change_values = negotiations[["Article", "Change Count"]].groupby("Article").max().to_dict()['Change Count']
+    
+    negotiations["Change Opacity"] = negotiations.apply(
+        lambda x: float(x["Change Count"]/change_values[x["Article"]]), axis=1
+    )
+    print(change_values)
     
     # Wrap text of changes for tooltips
     # Not currently in use, as we could wrap within the plotly table
@@ -160,7 +165,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
                 color_discrete_map=colordict,
                 custom_data=["Article", "Date", "Change Count"],
                 labels={"Article-wrap":""},
-                #opacity="Change Count" # needs to be [0-1], search "Change %"
+                #opacity= # needs to be [0-1], search "Change Opacity"
                 #pattern_shape="Party",
                 )
 
@@ -197,8 +202,10 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
             tickvals = times,
             ticktext = [time.date().strftime("%b %d, %Y") for time in times[:-1]] + ["Present"],
             range = range_,
+            gridcolor = "rgba(0, 4, 255, 0.05)"
         ),
-        margin={'t':75,'l':0,'b':0,'r':2}
+        margin={'t':75,'l':0,'b':0,'r':2},
+        plot_bgcolor = "rgba(0, 4, 255, 0.02)"
     )
     
     timeline.update_legends(
@@ -237,10 +244,10 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
         head_color = 'aquamarine',
         header_title = f"<b>Changes (Tentative Agreement)</b>"
     elif party[0] == 'Union':
-        head_color = 'lightcoral',
+        head_color = 'cornflowerblue',
         header_title = f"<b>Changes (proposed by Union)</b>"
     else:
-        head_color='cornflowerblue',
+        head_color='lightcoral',
         header_title= f"<b>Changes (proposed by University)</b>"
     
     # calculate max topic length for the left-hand column to be thin
@@ -255,7 +262,8 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
         cells=dict(
             values=[
                 subset["Topic"], 
-                subset["Changes from Previous Version"]
+                subset["Changes from Previous Version"],
+                
             ], 
             align='left',
         ),
@@ -265,6 +273,55 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     # adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
         title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)),
+        height = 500,
+        margin={'t':75,'l':0,'b':0,'r':0}
+    )
+    # increasing font size
+    fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
+    
+    return fig
+
+def final_changes_table(negotiations:pd.DataFrame, article:str):
+    """
+    Creates a table with the text of all the changes to the article on a given date
+
+    Args:
+        negotiations (pd.DataFrame): contract change data
+        article (str): specific article
+
+    Returns:
+        go.Figure: table chart with specific topic and the change made
+    """
+    # Choosing a subset of the data based on article/date
+    last_date = negotiations[negotiations["Article"] == article]['Start Date'].max()
+    final_changes:pd.DataFrame = negotiations.loc[(negotiations["Article"] == article) & (negotiations["Start Date"] == last_date)]
+    # selecting party for color, keeping consistent with established color theme
+    # but lightening it a little so that the text shows up and is readable
+    party = final_changes["Party"].unique().tolist()
+    if len(party) > 1 or party == 'Tentative Agreement':
+        head_color = 'aquamarine',
+        header_title = f"<b>Most Recent (Tentative Agreement, {last_date.date()})</b>"
+    elif party == 'Union':
+        head_color = 'cornflowerblue',
+        header_title = f"<b>Most Recent (Union, {last_date.date()})</b>"
+    else:
+        head_color='lightcoral',
+        header_title= f"<b>Most Recent (University, {last_date.date()})</b>"
+    
+    # table
+    fig = go.Figure(data=go.Table(
+        header=dict(values=[header_title], fill_color=head_color, align='left'),
+        cells=dict(
+            values=[
+                final_changes["Changes from Previous Version"]
+            ], 
+            align='left',
+        )
+    ))
+    
+    # adding and formatting table title, adjusting margins to use full space
+    fig.update_layout(
+        title=" ", # Most recent changes
         height = 500,
         margin={'t':75,'l':0,'b':0,'r':0}
     )
@@ -366,7 +423,8 @@ def timeline_negotiations():
     table = time_changes_table(negotiations, "Health and Safety", '8/26/2024')
     
     # matching default bar chart to the changes table
-    num_changes = time_changes_bars(negotiations, "Health and Safety")
+    #num_changes = time_changes_bars(negotiations, "Health and Safety")
+    final_changes = final_changes_table(negotiations, "Health and Safety")
     
     # Dash layout
     layout = html.Div([
@@ -407,8 +465,10 @@ def timeline_negotiations():
                     id='changes-table'
                 )], style={'width': '63%', 'display': 'inline-block'}),
                 html.Div([dcc.Graph(
-                    figure = num_changes,
-                    id='changes-bar'
+                    # figure = num_changes,
+                    # id='changes-bar'
+                    figure=final_changes,
+                    id='final-changes'
                 )], style={'width': '35%', 'float':'right', 'display': 'inline-block'})
                 ])
         ])
@@ -440,20 +500,32 @@ def timeline_negotiations():
             date = clickData["points"][0]['customdata'][1]
             return time_changes_table(negotiations, article, date)
     
-    # update change counts bars
-    def tl_bars_callback(app):
+    # update 
+    def tl_final_callback(app):
         @app.callback(
-            Output('changes-bar', 'figure'),
+            Output('final-changes', 'figure'),
             Input('negotiation-timeline', 'clickData'),
             prevent_initial_call=True,
             suppress_callback_exceptions=True
         )
         def update_table(clickData):
             article = clickData["points"][0]['customdata'][0]
-            return time_changes_bars(negotiations, article)
+            return final_changes_table(negotiations, article)
+    
+    # # update change counts bars
+    # def tl_bars_callback(app):
+    #     @app.callback(
+    #         Output('changes-bar', 'figure'),
+    #         Input('negotiation-timeline', 'clickData'),
+    #         prevent_initial_call=True,
+    #         suppress_callback_exceptions=True
+    #     )
+    #     def update_bar(clickData):
+    #         article = clickData["points"][0]['customdata'][0]
+    #         return time_changes_bars(negotiations, article)
         
     title = "Timeline of Contract Negotiations"
     subtitle = ""
     
     # NOTE: removed tl bars callback temporarily
-    return layout, [tl_slidergroup_callback, tl_table_callback, tl_bars_callback], title, subtitle
+    return layout, [tl_slidergroup_callback, tl_table_callback, tl_final_callback], title, subtitle

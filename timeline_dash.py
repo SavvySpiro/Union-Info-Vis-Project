@@ -113,10 +113,21 @@ def timeline_data():
     negotiations["Change Count"] = negotiations.apply(lambda x: changes(change_count, x["Article"], x["Start Date"]), axis=1)
     change_values = negotiations[["Article", "Change Count"]].groupby("Article").max().to_dict()['Change Count']
     
-    negotiations["Change Opacity"] = negotiations.apply(
-        lambda x: float(x["Change Count"]/change_values[x["Article"]]), axis=1
+    negotiations["Change Value"] = negotiations.apply(
+        lambda x: max(float(x["Change Count"]/change_values[x["Article"]]) - 0.15, 0.1), axis=1
     )
-    print(change_values)
+    
+    def color_change(party, value):
+        if party == "Union":
+            return px.colors.sample_colorscale('Blues', value)[0]
+        if party == "University":
+            return px.colors.sample_colorscale('Reds', value)[0]
+        else:
+            return px.colors.sample_colorscale('Greens', value)[0]
+    
+    negotiations["Color"] = negotiations.apply(
+        lambda x: color_change(x["Party"], x["Change Value"]), axis=1
+    )
     
     # Wrap text of changes for tooltips
     # Not currently in use, as we could wrap within the plotly table
@@ -152,21 +163,18 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
     subset = negotiations[negotiations["Group"] == grouping_]
     
     # Consistent color dict of parties involved
-    colordict = {'Union':px.colors.qualitative.Plotly[0], 
-                'University':px.colors.qualitative.Plotly[1],
-                'Tentative Agreement':px.colors.qualitative.Plotly[2]}
+    colordict = {color:color for color in negotiations["Color"].unique().tolist()}
     
     # Timeline: modified Gantt plot
     timeline = px.timeline(subset, 
                 x_start=subset["Start Date"], 
                 x_end=subset["End Date"],
                 y="Article-wrap",
-                color="Party",
+                color="Color",
                 color_discrete_map=colordict,
                 custom_data=["Article", "Date", "Change Count"],
-                labels={"Article-wrap":""},
+                labels={"Article-wrap":"", "Color":""},
                 #opacity= # needs to be [0-1], search "Change Opacity"
-                #pattern_shape="Party",
                 )
 
     # Timeline hover tooltip
@@ -179,9 +187,6 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
         marker = dict(
             pattern = dict(
                 path = "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z",
-                # path = [
-                #     "M0 0C6 2.5875 12 4.5 21 8.8875 12 13.5 7.8 14.5687 0 18c5.7-1.9125 18-4.5 27-8.9437C18 4.5 9.3 2.7 0 0Z",
-                #     "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z"],
                 size=23,
                 solidity=0.7
             )
@@ -242,13 +247,13 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     party = subset["Party"].unique().tolist()
     if len(party) > 1 or party[0] == 'Tentative Agreement':
         head_color = 'aquamarine',
-        header_title = f"<b>Changes (Tentative Agreement)</b>"
+        header_title = f"<b>Changes (Tentative Agreement, {date})</b>"
     elif party[0] == 'Union':
         head_color = 'cornflowerblue',
-        header_title = f"<b>Changes (proposed by Union)</b>"
+        header_title = f"<b>Changes (proposed by Union, {date})</b>"
     else:
         head_color='lightcoral',
-        header_title= f"<b>Changes (proposed by University)</b>"
+        header_title= f"<b>Changes (proposed by University, {date})</b>"
     
     # calculate max topic length for the left-hand column to be thin
     max_topic_length = subset["Topic"].str.len().max()
@@ -294,19 +299,23 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
     """
     # Choosing a subset of the data based on article/date
     last_date = negotiations[negotiations["Article"] == article]['Start Date'].max()
+    if last_date == pd.to_datetime('2025-05-30'):
+        ld_formatted = "Present"
+    else:
+        ld_formatted = last_date.date().strftime("%m/%d/%Y")
     final_changes:pd.DataFrame = negotiations.loc[(negotiations["Article"] == article) & (negotiations["Start Date"] == last_date)]
     # selecting party for color, keeping consistent with established color theme
     # but lightening it a little so that the text shows up and is readable
     party = final_changes["Party"].unique().tolist()
     if len(party) > 1 or party == 'Tentative Agreement':
         head_color = 'aquamarine',
-        header_title = f"<b>Most Recent (Tentative Agreement, {last_date.date()})</b>"
+        header_title = f"<b>Current Version (Tentative Agreement, {ld_formatted})</b>"
     elif party == 'Union':
         head_color = 'cornflowerblue',
-        header_title = f"<b>Most Recent (Union, {last_date.date()})</b>"
+        header_title = f"<b>Current Version (Union, {ld_formatted})</b>"
     else:
         head_color='lightcoral',
-        header_title= f"<b>Most Recent (University, {last_date.date()})</b>"
+        header_title= f"<b>Current Version (University, {ld_formatted})</b>"
     
     # table
     fig = go.Figure(data=go.Table(

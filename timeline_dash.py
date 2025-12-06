@@ -91,6 +91,12 @@ def timeline_data():
     
     negotiations["Group"] = negotiations["Article"].apply(category)
     
+    
+    wrapped_articles = {article:"<br>".join(textwrap.wrap(article, width=20)) for article in negotiations["Article"].unique()}
+    negotiations["Article-wrap"] = negotiations['Article'].apply(
+        lambda x: wrapped_articles[x]
+    )
+    
     # Count number of changes per article per date
     change_count = negotiations.groupby(["Article", "Start Date"])["Party"]\
         .count().reset_index().rename(columns={"Party":"Count"})
@@ -105,6 +111,7 @@ def timeline_data():
         return counts[(article, start.strftime('%Y-%m-%d'))]
     
     negotiations["Change Count"] = negotiations.apply(lambda x: changes(change_count, x["Article"], x["Start Date"]), axis=1)
+    # negotiations["Change %"] for mapping opacity!!!
     
     # Wrap text of changes for tooltips
     # Not currently in use, as we could wrap within the plotly table
@@ -148,11 +155,12 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
     timeline = px.timeline(subset, 
                 x_start=subset["Start Date"], 
                 x_end=subset["End Date"],
-                y="Article",
+                y="Article-wrap",
                 color="Party",
                 color_discrete_map=colordict,
                 custom_data=["Article", "Date", "Change Count"],
-                labels={"Article":""},
+                labels={"Article-wrap":""},
+                #opacity="Change Count" # needs to be [0-1], search "Change %"
                 #pattern_shape="Party",
                 )
 
@@ -162,6 +170,18 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
                         "<b>Date: </b> %{customdata[1]} <br>" +
                         "<b>Number of changes:</b> %{customdata[2]}<extra></extra>")
     
+    timeline.update_traces(
+        marker = dict(
+            pattern = dict(
+                path = "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z",
+                # path = [
+                #     "M0 0C6 2.5875 12 4.5 21 8.8875 12 13.5 7.8 14.5687 0 18c5.7-1.9125 18-4.5 27-8.9437C18 4.5 9.3 2.7 0 0Z",
+                #     "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z"],
+                size=23,
+                solidity=0.7
+            )
+        )
+    )
     
     # Adjusting x-axis to be consistently spaced
     present_dates=set(negotiations['Start Date']).union(set(negotiations["End Date"]))
@@ -175,7 +195,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
         xaxis = dict(
             tickmode = "array",
             tickvals = times,
-            ticktext = [time.date().strftime("%b %d, %y") for time in times[:-1]] + ["Present"],
+            ticktext = [time.date().strftime("%b %d, %Y") for time in times[:-1]] + ["Present"],
             range = range_,
         ),
         margin={'t':75,'l':0,'b':0,'r':2}
@@ -217,10 +237,10 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
         head_color = 'aquamarine',
         header_title = f"<b>Changes (Tentative Agreement)</b>"
     elif party[0] == 'Union':
-        head_color = 'cornflowerblue',
+        head_color = 'lightcoral',
         header_title = f"<b>Changes (proposed by Union)</b>"
     else:
-        head_color='lightcoral',
+        head_color='cornflowerblue',
         header_title= f"<b>Changes (proposed by University)</b>"
     
     # calculate max topic length for the left-hand column to be thin

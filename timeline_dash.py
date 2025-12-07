@@ -318,12 +318,20 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
     # Load the recent summaries CSV
     summaries = pd.read_csv("data/contract_recent_summaries.csv")
     
+    
     # Filter to get all topics for this article
     article_summaries = summaries[summaries["Article"] == article]
     
     if article_summaries.empty:
         # If no summaries found, return empty figure
         return go.Figure()
+    
+    # last date of negotiations
+    last_date = negotiations[negotiations["Article"] == article]['Start Date'].max()
+    if last_date == pd.to_datetime('2025-05-30'):
+        ld_formatted = "Present"
+    else:
+        ld_formatted = last_date.date().strftime("%m/%d/%Y")
     
     # Parse party and date from the first summary to determine color
     # (assuming all topics in an article have the same party/date for the most recent change)
@@ -344,8 +352,7 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
         date_match = re.search(r'\((\d{2}-\d{2}-\d{2})', first_summary)
         date_str = f", {date_match.group(1)}" if date_match else ""
         header_title = f"<b>Most Recent Language (University{date_str})</b>"
-    else:
-        ld_formatted = last_date.date().strftime("%m/%d/%Y")
+    
     final_changes:pd.DataFrame = negotiations.loc[(negotiations["Article"] == article) & (negotiations["Start Date"] == last_date)]
     # selecting party for color, keeping consistent with established color theme
     # but lightening it a little so that the text shows up and is readable

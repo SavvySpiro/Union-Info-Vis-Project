@@ -5,6 +5,7 @@ from dash import Dash, dcc, html, Input, Output, callback
 import pandas as pd
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
+from PIL import Image
 
 '''--------------------- Data Processing ---------------------'''
 def timeline_data():
@@ -131,11 +132,14 @@ def timeline_data():
     
     def color_change(party, value):
         if party == "Union":
-            return px.colors.sample_colorscale('Reds', value)[0]
+            return -1 * value
+            #return px.colors.sample_colorscale('Reds', value)[0]
         if party == "University":
-            return px.colors.sample_colorscale('Teal', value)[0]
+            return value
+            # return px.colors.sample_colorscale('Teal', value)[0]
         else:
-            return px.colors.sample_colorscale('Greens', value)[0]
+            return 0
+            #return px.colors.sample_colorscale('Greens', value)[0]
     
     negotiations["Color"] = negotiations.apply(
         lambda x: color_change(x["Party"], x["Change Value"]), axis=1
@@ -176,7 +180,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
     subset['Duration'] = (subset['End Date'] - subset['Start Date']).dt.days
     
     # Consistent color dict of parties involved
-    colordict = {color:color for color in negotiations["Color"].unique().tolist()}
+    #colordict = {color:color for color in negotiations["Color"].unique().tolist()}
     
     # Timeline: modified Gantt plot
     timeline = px.timeline(subset, 
@@ -184,10 +188,9 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
                 x_end=subset["End Date"],
                 y="Article-wrap",
                 color="Color",
-                color_discrete_map=colordict,
+                color_continuous_scale=px.colors.diverging.RdBu,
                 custom_data=["Article", "Date", "Change Count", "Duration"],
-                labels={"Article-wrap":""},
-                #opacity= # needs to be [0-1], search "Change Opacity"
+                labels={"Article-wrap":"", "Color":"Party & Number of Changes"},
                 )
 
     # Timeline hover tooltip
@@ -197,15 +200,16 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
                         "<b>Duration until next change:</b> %{customdata[3]} days<br>" +  
                         "<b>Number of changes:</b> %{customdata[2]}<extra></extra>")
     
-    timeline.update_traces(
-        marker = dict(
-            pattern = dict(
-                path = "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z",
-                size=23,
-                solidity=0.7
-            )
-        )
-    )
+    # adding arrow pattern
+    # timeline.update_traces(
+    #     marker = dict(
+    #         pattern = dict(
+    #             path = "M0 0C3 4 4 5 8 9 4 12 3 14 0 18c4-4 7-6 12-9C7 6 4 3 0 0Z",
+    #             size=23,
+    #             solidity=0.7
+    #         )
+    #     )
+    # )
     
     # Adjusting x-axis to be consistently spaced
     present_dates=set(negotiations['Start Date']).union(set(negotiations["End Date"]))
@@ -225,9 +229,21 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
         ),
         margin={'t':75,'l':0,'b':0,'r':2},
         plot_bgcolor = "rgba(0, 4, 255, 0.02)",
-        showlegend=False
+        showlegend=True
     )
     
+    # custom legend
+    timeline.update_coloraxes(
+        colorbar=dict(orientation='h', y=102),
+        colorbar_tickmode = 'array',
+        colorbar_tickvals = [-0.7, 0, 0.7],
+        colorbar_ticktext = ["Union", "Tentative Agreement", "University"]
+        # dict(
+        #     tickmode = 'array',
+        #     tickvals = [-0.7, 0, 0.7],
+        #     ticktext = ["Union", "Tentative Agreement", "University"]
+        # )
+    )
     # timeline.update_legends(
     #     title = "Party:",
     #     orientation = "h",
@@ -527,7 +543,13 @@ def timeline_negotiations():
             figure=timeline,
             id="negotiation-timeline"
         ),
-        
+        # ADD ARROW HERE
+        # 'i.imgur.com/4CpAXsN.png'
+        html.Div([
+            html.Img(
+                src = Image.open('images/rightarrow_final.png'), 
+                alt='Timeline arrow pointing right from January 25, 2024 to present')],
+            style={'float': 'right', 'marginRight':'35px'}),
         # dates slider, evenly spaced
         html.Div([
             html.Div([

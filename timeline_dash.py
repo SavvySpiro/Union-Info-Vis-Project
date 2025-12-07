@@ -41,12 +41,11 @@ def timeline_data():
         'Labor Management Committee':"Union (General)", 
         'Union Security':"Union (General)", 
         'Union Access and Rights':"Union (General)", 
-        'No Strike No Lockout':"Union (General)", 
         'Union Officers and Stewards':"Union (General)",
         'Recognition':"Union (General)",
+        'Bargaining Ground Rules':"Union (Legal)",
         
-        
-        'Bargaining Ground Rules':"Union (Legal)", 
+        'No Strike No Lockout':"Union (Legal)", 
         'Successorship':"Union (Legal)", 
         'Comprehensive and Complete Agreement':"Union (Legal)", 
         'Severability':"Union (Legal)", 
@@ -61,7 +60,7 @@ def timeline_data():
         'Training':"Employment (Requirements)",
         
         
-        'Discipline and Dismissal':"Employment (Rights)",
+        'Appointment Security':"Employment (Protections)",
         'Job Postings':"Employment (Rights)",
         'International Worker Rights':"Employment (Rights)",
         'Workspace and Materials':"Employment (Rights)",
@@ -73,9 +72,9 @@ def timeline_data():
         'Automation':"Employment (Protections)",
         'Sub-Contracting':"Employment (Protections)",
         'Prohibition Against Discrimination and Harassment':"Employment (Protections)",
-        'Appointment Security':"Employment (Protections)",
         'Health and Safety':"Employment (Protections)",
         'Accessibility':"Employment (Protections)",
+        'Discipline and Dismissal':"Employment (Rights)",
         
         
         'Housing':"Benefits", 

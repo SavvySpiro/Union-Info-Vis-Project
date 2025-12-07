@@ -439,6 +439,22 @@ def timeline_negotiations():
     
     TOPICS = sorted(negotiations["Group"].unique())
     
+    
+    def summarize_topic(topic):
+        TOPIC_SUMMARIES = {
+            'Union (General)': 'The organization of the union and recognition by the university',
+            'Union (Legal)': 'How the contract legally binds both parties',
+
+            'Employment (Requirements)': 'What is a graduate student worker required to do as an employee of the university',
+            'Employment (Rights)': 'What does a graduate student worker get as part of their work',
+            'Employment (Protections)': "How are graduate student workers' rights protected",
+
+            "Academic": 'Tuition and intellectual property/academic freedom',
+
+            "Benefits": 'What are the benefits for being a graduate student worker'
+        }
+        return TOPIC_SUMMARIES[topic]
+    
     # Default timeline is all dates, with a selected group
     # Group has 'Appointments and Reappointments' in it, to match the default linked charts
     timeline = negotiation_timeline(negotiations, TIMES, 
@@ -460,12 +476,18 @@ def timeline_negotiations():
             options = sorted(negotiations["Group"].unique().tolist()),
             value="Employment (Requirements)", 
             id='timeline-group')], style={'width': '49%', 'display': 'inline-block'}),
+        dcc.Markdown(
+            summarize_topic("Employment (Requirements)"),
+            id = 'onscreen-text',
+            style={'width': '35%', 'display': 'inline-block', "margin-left": "1rem"}
+        ),
         # main timeline graph
         dcc.Graph(
             figure=timeline,
             id="negotiation-timeline",
             clickData={'points': [{'customdata': ['Article', 'Date']}]}
         ),
+        
         # dates slider, evenly spaced
         html.Div([
             html.Div([
@@ -513,13 +535,14 @@ def timeline_negotiations():
     def tl_slidergroup_callback(app):
         @app.callback(
             Output("negotiation-timeline", "figure"),
+            Output("onscreen-text", "children"),
             Input("timeline-slider", "value"), # dates
             Input('timeline-group', 'value'), # "group" of attributes
             suppress_callback_exceptions=True
         )
         def update_timeline(dates, group):
             return negotiation_timeline(negotiations, TIMES, 
-                                        [TIMES[dates[0]], TIMES[dates[1]]], group)
+                                        [TIMES[dates[0]], TIMES[dates[1]]], group), summarize_topic(group)
     
     # update changes table
     def tl_table_callback(app):

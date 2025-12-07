@@ -131,9 +131,9 @@ def timeline_data():
     
     def color_change(party, value):
         if party == "Union":
-            return px.colors.sample_colorscale('Blues', value)[0]
-        if party == "University":
             return px.colors.sample_colorscale('Reds', value)[0]
+        if party == "University":
+            return px.colors.sample_colorscale('Teal', value)[0]
         else:
             return px.colors.sample_colorscale('Greens', value)[0]
     
@@ -262,13 +262,13 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     # but lightening it a little so that the text shows up and is readable
     party = subset["Party"].unique().tolist()
     if len(party) > 1 or party[0] == 'Tentative Agreement':
-        head_color = 'aquamarine',
+        head_color = 'mediumaquamarine',
         header_title = f"<b>Changes (Tentative Agreement, {date})</b>"
     elif party[0] == 'Union':
-        head_color = 'cornflowerblue',
+        head_color = 'lightcoral',
         header_title = f"<b>Changes (proposed by Union, {date})</b>"
     else:
-        head_color='lightcoral',
+        head_color='lightsteelblue',
         header_title= f"<b>Changes (proposed by University, {date})</b>"
     
     # calculate max topic length for the left-hand column to be thin
@@ -293,7 +293,8 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     
     # adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) + "<br><sup>To see all of the changes, scroll down.</sup>",
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) \
+            + "<br><sup>To see all of the changes, scroll down.</sup>",
         height = 500,
         margin={'t':90,'l':0,'b':0,'r':0},
         
@@ -344,6 +345,22 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
         date_str = f", {date_match.group(1)}" if date_match else ""
         header_title = f"<b>Most Recent Language (University{date_str})</b>"
     else:
+        ld_formatted = last_date.date().strftime("%m/%d/%Y")
+    final_changes:pd.DataFrame = negotiations.loc[(negotiations["Article"] == article) & (negotiations["Start Date"] == last_date)]
+    # selecting party for color, keeping consistent with established color theme
+    # but lightening it a little so that the text shows up and is readable
+    party = final_changes["Party"].unique().tolist()
+    if len(party) > 1 or party[0] == 'Tentative Agreement':
+        head_color = 'mediumaquamarine',
+        header_title = f"<b>Most Recent (Tentative Agreement, {ld_formatted})</b>"
+    elif party[0] == 'Union':
+        head_color = 'lightcoral',
+        header_title = f"<b>Most Recent (Union, {ld_formatted})</b>"
+    else:
+        head_color='lightsteelblue',
+        header_title= f"<b>Most Recent (University, {ld_formatted})</b>"
+    
+    # table
         # Default if format doesn't match
         head_color = 'lightgray'
         header_title = "<b>Most Recent Language</b>"
@@ -355,6 +372,7 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
         clean_summaries.append(clean_summary)
     
     # Create table with two columns: Topic and Summary
+
     fig = go.Figure(data=go.Table(
         header=dict(
             values=["<b>Topic</b>", header_title], 

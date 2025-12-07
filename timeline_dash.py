@@ -6,6 +6,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 from PIL import Image
+import re
 
 '''--------------------- Data Processing ---------------------'''
 def timeline_data():
@@ -342,51 +343,50 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
         # If no summaries found, return empty figure
         return go.Figure()
     
-    # last date of negotiations
-    last_date = negotiations[negotiations["Article"] == article]['Start Date'].max()
-    if last_date == pd.to_datetime('2025-05-30'):
-        ld_formatted = "Present"
-    else:
-        ld_formatted = last_date.date().strftime("%m/%d/%Y")
-    
     # Parse party and date from the first summary to determine color
     # (assuming all topics in an article have the same party/date for the most recent change)
     first_summary = article_summaries["Summary"].values[0]
     
     if first_summary.startswith("Tentative Agreement:"):
-        head_color = 'aquamarine'
+        head_color = 'mediumaquamarine'
         header_title = "<b>Most Recent Language</b>"
     elif first_summary.startswith("Union ("):
-        head_color = 'cornflowerblue'
-        import re
+        head_color = 'lightcoral'
         date_match = re.search(r'\((\d{2}-\d{2}-\d{2})', first_summary)
         date_str = f", {date_match.group(1)}" if date_match else ""
         header_title = f"<b>Most Recent Language (Union{date_str})</b>"
     elif first_summary.startswith("University ("):
-        head_color = 'lightcoral'
-        import re
+        head_color = 'lightsteelblue'
         date_match = re.search(r'\((\d{2}-\d{2}-\d{2})', first_summary)
         date_str = f", {date_match.group(1)}" if date_match else ""
         header_title = f"<b>Most Recent Language (University{date_str})</b>"
-    
-    final_changes:pd.DataFrame = negotiations.loc[(negotiations["Article"] == article) & (negotiations["Start Date"] == last_date)]
-    # selecting party for color, keeping consistent with established color theme
-    # but lightening it a little so that the text shows up and is readable
-    party = final_changes["Party"].unique().tolist()
-    if len(party) > 1 or party[0] == 'Tentative Agreement':
-        head_color = 'mediumaquamarine',
-        header_title = f"<b>Most Recent (Tentative Agreement, {ld_formatted})</b>"
-    elif party[0] == 'Union':
-        head_color = 'lightcoral',
-        header_title = f"<b>Most Recent (Union, {ld_formatted})</b>"
-    else:
-        head_color='lightsteelblue',
-        header_title= f"<b>Most Recent (University, {ld_formatted})</b>"
-    
-    # table
-        # Default if format doesn't match
+    else: # Default if format doesn't match
         head_color = 'lightgray'
         header_title = "<b>Most Recent Language</b>"
+    
+    
+    # Old code for header formatting
+    # last date of negotiations
+    # last_date = negotiations[negotiations["Article"] == article]['Start Date'].max()
+    # if last_date == pd.to_datetime('2025-05-30'):
+    #     ld_formatted = "Present"
+    # else:
+    #     ld_formatted = last_date.date().strftime("%m/%d/%Y")
+    #final_changes:pd.DataFrame = negotiations.loc[(negotiations["Article"] == article) & (negotiations["Start Date"] == last_date)]
+    # selecting party for color, keeping consistent with established color theme
+    # but lightening it a little so that the text shows up and is readable
+    # party = final_changes["Party"].unique().tolist()
+    # if len(party) > 1 or party[0] == 'Tentative Agreement':
+    #     head_color = 'mediumaquamarine',
+    #     header_title = f"<b>Most Recent (Tentative Agreement, {ld_formatted})</b>"
+    # elif party[0] == 'Union':
+    #     head_color = 'lightcoral',
+    #     header_title = f"<b>Most Recent (Union, {ld_formatted})</b>"
+    # else:
+    #     head_color='lightsteelblue',
+    #     header_title= f"<b>Most Recent (University, {ld_formatted})</b>"
+    
+        
     
     # Clean the summary text (remove the party/date prefix) for all summaries
     clean_summaries = []

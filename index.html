@@ -1,4 +1,6 @@
-<h1>See What's at Stake: Northeastern/GENU-UAW Contract Proposal Visualized</h1>
+<h1 style="text-align: center;">See What's at Stake: Northeastern/GENU-UAW Contract Proposal Visualized</h1>
+<h3 style="text-align: center;">Alenna Spiro, Noah Rae-Grant</h3>
+<h3 style="text-align: center;">CS 7250 Fall 2025 Final Project</h3>
 <p>Unlike traditional contract negotiations which are article-by-article, Northeastern released a complete 'Final' contract proposal all at once. Our dashboard visualizes key provisions to help union members and curious graduate students understand what's being offered.&nbsp;</p>
 <h2>Motivation</h2>
 <p>When we first were planning this project, both of us were coming at it from the angle of being the target audience. We had heard about the union a bit, but we didn't know what state the contract negotiations were in, why it was taking so long, and what graduate student workers would get out of the contract.</p>
@@ -44,8 +46,17 @@
 <p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/9CGkxBs.png" alt="Proposal examination view after selecting a bar" width="442" height="200" /></p>
 <p>Selecting any bar in the timeline opens up an examination of what changed in that article on that date, as well as a summary the final version of the article.</p>
 <h3>Stipends</h3>
-<p><img src="https://i.imgur.com/e6lkcOw.png" alt="Line chart depicting the change of Boston-area PhD stipends since 2011" width="397" height="250" /></p>
-<p><img src="https://i.imgur.com/E3JpIcc.png" alt="Line chart depicting changes in Northeastern PhD stipends since 2013" width="378" height="250" /></p>
-<p>Both stipend-related charts are line charts, showing the change over time since our earliest data.</p>
+<p style="text-align: center;"><img src="https://i.imgur.com/e6lkcOw.png" alt="Line chart depicting the change of Boston-area PhD stipends since 2011" width="397" height="250" /></p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/E3JpIcc.png" alt="Line chart depicting changes in Northeastern PhD stipends since 2013" width="378" height="250" /></p>
+<p>Both stipend-related charts are line charts, showing the change over time since our earliest data. As noted in the "Data" section above, the stipend data is erratic due to the nature of being self-reported. To mitigate this as much as possible, we averaged the stipend amounts by university or department, filtered out certain departments that only had a single point of data, and grouped together some departments that were within the same college at Northeastern.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/YEvvnzG.png" alt="Hover tooltip detail for the Boston-area university stipend chart" width="317" height="200" /></p>
+<p>Hovering over either chart opens up a tooltip displaying what the average pay was for that university or department during that year. The department-level chart can also be filtered by different Northeastern colleges, such as Khoury College of Computer Science or the College of Engineering.</p>
+<h3>Health Plan Benefits</h3>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/8A9buBV.png" alt="Unit chart depicting what Boston area university health plans offer" width="383" height="300" /></p>
+<p>The health plan unit chart went through a few iterations, finally ending up with the icon overview on the left and the detail bar chart on the right. We initially used a green/red color scheme, but given how we use red as a popout effect elsewhere, we decided to change it to blue/yellow on the advice of Prof. Borkin.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/4DozQfb.png" alt="Detail view of the health plan benefits tooltip" width="342" height="200" /></p>
+<p>Hovering over an icon shows what that specific university's plan provides for that benefit, and clicking on it will open up the comparison bar chart showing how much is covered by each plan. For the bar chart, blue indicates a "good" benefit, such as lower cost co-pay or a larger amount covered by insurance.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/zv0YqGh.png" alt="Hover detail for health plan benefit legend" width="249" height="200" /></p>
+<p>Hovering over each item on the legend also provides an explanation of what that part of the plan covers. The health plans can be filtered by provider as well, in case someone wants to see if their preferred provider is within network.</p>
 <h2>Data Analysis</h2>
 <h2>Conclusion</h2>

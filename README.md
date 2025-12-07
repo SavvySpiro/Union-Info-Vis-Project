@@ -24,7 +24,7 @@ See requirements.txt for required libraries that may need to be installed.
 
 ## Last Minute To-Do
 - [x] Bigger titles and subtitles A
-- [ ] Fix timeline vis N
+- [x] Fix timeline vis N
     - [x] Comparing changes?
     - [ ] Explaining what "no change" means OR filter out with regex
     - [x] Drop bar chart, add another column to table to show previous changes
@@ -38,11 +38,11 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Include corresponding emoji in title of bar chart
 - [ ] Write instructions for use at top N
 - [x] Table of contents at top/links to diff vis boxes A
-- [ ] More explanations for vis/longer captions (e.g. explain groupings in timeline) N
+- [x] More explanations for vis/longer captions (e.g. explain groupings in timeline) N
 - [x] Titles on boxes A
 - [ ] Write paper AN
 - [ ] Create demo (Alenna) 
-- [ ] Write presentation/slide deck ANNNNN
+- [x] Write presentation/slide deck ANNNNN
 - [ ] IF TIME: Tutorial for visualizations A
 - [ ] IF TIME: Highlight on hover (if pink, it's clickable) A
 - [ ] IF NO TIME: Specialized instructions on each modal for what you can click N
@@ -52,7 +52,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Add arrows to timeline for clarity N
     - [x] Label clickable boxes A
     - [x] Dynamic box configuration 
-    - [ ] Add instructions on how to navigate to the more complicated vis N
+    - [x] Add instructions on how to navigate to the more complicated vis N
     - [ ] More visualizations? AN
     - [ ] Write paper AN
     - [ ] Do demo A
@@ -136,9 +136,9 @@ See requirements.txt for required libraries that may need to be installed.
         - [x] In the subtable, add current and end changes
     - [ ] Tooltips
         - [x] Add duration until next change
-        - [ ] Per topic explanation tooltip stating what something is A
-    - [ ] Dropdown to choose between topics
-        - [ ] Add explanation of groupings
+        - [x] Per topic explanation tooltip stating what something is A
+    - [x] Dropdown to choose between topics
+        - [x] Add explanation of groupings
     - [x] Wrap topic titles
     - [x] Arrow to either axis or bars
     - [x] Add explicit scrollbar to the table or subtitle explaining it

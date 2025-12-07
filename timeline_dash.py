@@ -326,13 +326,13 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
     party = final_changes["Party"].unique().tolist()
     if len(party) > 1 or party[0] == 'Tentative Agreement':
         head_color = 'aquamarine',
-        header_title = f"<b>Current Version (Tentative Agreement, {ld_formatted})</b>"
+        header_title = f"<b>Most Recent (Tentative Agreement, {ld_formatted})</b>"
     elif party[0] == 'Union':
         head_color = 'cornflowerblue',
-        header_title = f"<b>Current Version (Union, {ld_formatted})</b>"
+        header_title = f"<b>Most Recent (Union, {ld_formatted})</b>"
     else:
         head_color='lightcoral',
-        header_title= f"<b>Current Version (University, {ld_formatted})</b>"
+        header_title= f"<b>Most Recent (University, {ld_formatted})</b>"
     
     # table
     fig = go.Figure(data=go.Table(

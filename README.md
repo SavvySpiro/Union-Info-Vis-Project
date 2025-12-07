@@ -60,7 +60,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Desaturated background on all charts N
     - [x] Deliberate abt color scheme AN
 
-- [ ] Dashboard set up
+- [x] Dashboard set up
     - [x] Title and subtitle for whole project
     - [x] Contract loaded as background 
     - [x] Pop-ups working, showing visualization
@@ -142,7 +142,7 @@ See requirements.txt for required libraries that may need to be installed.
         - [ ] For 3 employment groups, give explanation and theme
     - [x] Wrap topic titles
     - [ ] Arrow to either axis or bars
-    - [ ] Add explicit scrollbar to the table or subtitle explaining it
+    - [x] Add explicit scrollbar to the table or subtitle explaining it
     - [ ] Add text explanation of "no change"
     - [x] Sub-table 
         - [x] add second column for "final"

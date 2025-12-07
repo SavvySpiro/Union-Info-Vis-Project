@@ -130,9 +130,9 @@ def timeline_data():
     
     def color_change(party, value):
         if party == "Union":
-            return px.colors.sample_colorscale('Blues', value)[0]
-        if party == "University":
             return px.colors.sample_colorscale('Reds', value)[0]
+        if party == "University":
+            return px.colors.sample_colorscale('Teal', value)[0]
         else:
             return px.colors.sample_colorscale('Greens', value)[0]
     
@@ -261,13 +261,13 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     # but lightening it a little so that the text shows up and is readable
     party = subset["Party"].unique().tolist()
     if len(party) > 1 or party[0] == 'Tentative Agreement':
-        head_color = 'aquamarine',
+        head_color = 'mediumaquamarine',
         header_title = f"<b>Changes (Tentative Agreement, {date})</b>"
     elif party[0] == 'Union':
-        head_color = 'cornflowerblue',
+        head_color = 'lightcoral',
         header_title = f"<b>Changes (proposed by Union, {date})</b>"
     else:
-        head_color='lightcoral',
+        head_color='lightsteelblue',
         header_title= f"<b>Changes (proposed by University, {date})</b>"
     
     # calculate max topic length for the left-hand column to be thin
@@ -292,7 +292,8 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     
     # adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) + "<br><sup>To see all of the changes, scroll down.</sup>",
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) \
+            + "<br><sup>To see all of the changes, scroll down.</sup>",
         height = 500,
         margin={'t':90,'l':0,'b':0,'r':0},
         
@@ -324,13 +325,13 @@ def final_changes_table(negotiations:pd.DataFrame, article:str):
     # but lightening it a little so that the text shows up and is readable
     party = final_changes["Party"].unique().tolist()
     if len(party) > 1 or party[0] == 'Tentative Agreement':
-        head_color = 'aquamarine',
+        head_color = 'mediumaquamarine',
         header_title = f"<b>Most Recent (Tentative Agreement, {ld_formatted})</b>"
     elif party[0] == 'Union':
-        head_color = 'cornflowerblue',
+        head_color = 'lightcoral',
         header_title = f"<b>Most Recent (Union, {ld_formatted})</b>"
     else:
-        head_color='lightcoral',
+        head_color='lightsteelblue',
         header_title= f"<b>Most Recent (University, {ld_formatted})</b>"
     
     # table
@@ -485,17 +486,17 @@ def timeline_negotiations():
     def summarize_topic(topic):
         TOPIC_SUMMARIES = {
             'Union (General)': 'The organization of the union and recognition by the university',
-            'Union (Legal)': 'How the contract legally binds both parties',
+            'Union (Legal)': 'How the contract is created between both parties and enforced',
 
-            'Employment (Requirements)': 'What is a graduate student worker required to do as an employee of the university',
-            'Employment (Rights)': 'What does a graduate student worker get as part of their work',
-            'Employment (Protections)': "How are graduate student workers' rights protected",
+            'Employment (Requirements)': 'What a graduate student worker is required to do as an employee of the university',
+            'Employment (Rights)': 'What a graduate student worker gets as part of their working environment',
+            'Employment (Protections)': "How graduate student workers' rights are protected, both physically and legally",
 
-            "Academic": 'Tuition and intellectual property/academic freedom',
+            "Academic": 'The graduate student worker as a student: tuition, intellectual property, and academic freedom',
 
-            "Benefits": 'What are the benefits for being a graduate student worker'
+            "Benefits": 'The benefits for being a unionized graduate student worker'
         }
-        return TOPIC_SUMMARIES[topic]
+        return f"{TOPIC_SUMMARIES[topic]}"
     
     # Default timeline is all dates, with a selected group
     timeline = negotiation_timeline(negotiations, TIMES, 
@@ -516,7 +517,7 @@ def timeline_negotiations():
         dcc.Markdown(
             summarize_topic("Employment (Requirements)"),
             id = 'onscreen-text',
-            style={'width': '35%', 'display': 'inline-block', "margin-left": "1rem"}
+            style={'width': '35%', 'display': 'inline-block', "margin-left": "1rem", 'color': 'gray'}
         ),
         # main timeline graph
         dcc.Graph(

@@ -310,7 +310,7 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
     
     # adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
-        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=60)) \
+        title = "<br>".join(textwrap.wrap(f"What changed in the {article} article on {date}?", width=55)) \
             + "<br><sup>To see all of the changes, scroll down.</sup>",
         height = 500,
         margin={'t':90,'l':0,'b':0,'r':0},

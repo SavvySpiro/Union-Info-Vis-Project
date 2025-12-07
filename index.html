@@ -1,5 +1,5 @@
 <h1>See What's at Stake: Northeastern/GENU-UAW Contract Proposal Visualized</h1>
-<p>Unlike traditional contract negotiations which are article-by-article, Northeastern released a complete 'Final' contract proposal all at once. This dashboard visualizes key provisions to help union members and curious graduate students understand what's being offered.&nbsp;</p>
+<p>Unlike traditional contract negotiations which are article-by-article, Northeastern released a complete 'Final' contract proposal all at once. Our dashboard visualizes key provisions to help union members and curious graduate students understand what's being offered.&nbsp;</p>
 <h2>Motivation</h2>
 <p>When we first were planning this project, both of us were coming at it from the angle of being the target audience. We had heard about the union a bit, but we didn't know what state the contract negotiations were in, why it was taking so long, and what graduate student workers would get out of the contract.</p>
 <p>After interviewing a few union members, we realized our visualization should do two things: explain the contract, and be a source of information for incoming graduate students. The union has primarily done grassroots outreach through labs, which makes it difficult to reach masters students or students in labs where there is no current presence. Having a webpage that can supplement the grassroots outreach will be helpful in reaching those two audiences.</p>
@@ -7,14 +7,45 @@
 <h2>Data</h2>
 <p>For this project, we predominantly focused on the contract and its various iterations, but we also incorporated:</p>
 <ul>
-<li>Self-reported stipend data from <a href="https://www.phdstipends.com/">phdstipends.com</a>&nbsp;from 2011-2025</li>
+<li>Self-reported stipend data from <a href="https://www.phdstipends.com/">phdstipends.com</a>&nbsp;from 2011-2025 for Northeastern and other Boston-area students</li>
 <li>2025 health plan information from Boston-area universities</li>
 </ul>
-<p>For the task of turning the contract into data, we did use the Claude LLM for two things: finding the differences between each iteration of the contract, and summarizing the final versions of the different articles. This was the only use of LLM tools in our project.</p>
+<p><em>AI Disclosure:&nbsp;</em>For the task of turning the contract into data, we did use the Claude LLM for two things: finding the differences between each iteration of the contract, and summarizing the final versions of the different articles. This was the only use of LLM tools in our project.</p>
 <p>The final contract data encompasses the articles, the topic of what was changed within each article, the date it was changed, the party that made the change, and a short summary of what was changed. Each of these articles was grouped into a larger themed group (such as "Employment (Requirements)" or "Benefits") for display purposes.</p>
+<p>The Boston-area universities we are using for comparison are the Massachusetts Institute of Technology (MIT), Boston University (BU), Harvard, University of Massachusetts Boston (UMass), and Tufts University. We chose these universities because they are also unionized, and those unions have or are in the process of negotiating contracts.&nbsp;</p>
+<p>Due to the nature of the stipend data being self-reported, it can be somewhat erratic and inconsistent. However, we felt that it does successfully show the general trend of how stipends grow but still remain between the living wage for a single person in the area, as calculated by the <a href="https://livingwage.mit.edu/">MIT Living Wage Calculator</a>.</p>
 <h2>Task Analysis</h2>
-<p>&nbsp;</p>
+<p>At a high level, our primary task was to offer an explanation of the contract and a tool for graduate students to analyze it themselves. As part of this, we had to figure out how to compare to other local universities and what specific information we wanted to convey.</p>
+<p>To do this, we decided on three major topics we wanted to examine: stipends, healthcare, and the contract negotiations themselves. We would consider our project successful if a user was able to:</p>
+<ul>
+<li>Compare stipend amounts between different Boston-area universities, as well as between departments and colleges within Northeastern</li>
+<li>Compare what different Boston-area universities offered in their healthcare plans</li>
+<li>Explore what articles changed the most and how during the negotiations</li>
+</ul>
 <h2>Design Process</h2>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/qOejvHN.jpeg" alt="Post-it note sketches with a central contract framework surrounded by potential subplots" width="500" height="374" /></p>
+<p>While our original idea had everything as separate visualizations, the project came together when we decided to use the contract itself as our framework. Clicking on a part of the contract would pop out a chart that provides an explanation of that section or a comparison related to that section.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/Fw7yN48.jpeg" alt="Whiteboard sketch of a timeline, with text bubbles at different points saying &quot;GENU did this&quot; and &quot;NEU did that&quot;" width="342" height="200" /></p>
+<p>The timeline ended up very different than our original sketch, due to the complexities of the negotiation. Our original line, with a single point for each time, ended up proving very insufficient for what we wanted to convey.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/MYVD7R0.jpeg" alt="Whiteboard sketch of a line chart showing increasing PhD stipends, with a wiggly dashed line for inflation" width="342" height="200" /></p>
+<p>We spent a while trying to get inflation working as part of our stipend visualizations, and we ended up having to scrap that part of our stipend idea. Instead, we added lines to compare the Massachusetts poverty line and the Boston-area living wage to our stipend data.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/a4sqrEg.png" alt="Paper sketch of a unit chart to show healthcare benefits" width="235" height="250" /></p>
+<p>The unit chart for health plan benefits stayed reasonably close to its initial design, with largely aesthetic changes to make it clear. The upper portion of the chart shows benefits included in each plan, while the lower portion are items excluded from plans. Each icon represents a different element of a health plan, such as primary care, dental plans, or emergency room costs.</p>
 <h2>Final Visualization</h2>
+<p>## DEMO HERE</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/wUWRpyc.png" alt="Final landing page design" width="501" height="250" /><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/6l3qBQd.png" alt="Navigation tab" width="290" height="200" /></p>
+<p>Our final design allows a user to scroll through the current iteration of the contract. A yellow box indicates a clickable portion that will pop out a visualization. We also provide a table of contents at the top for quickly jumping between the different visualizationsm rather than scrolling.</p>
+<h3>Timeline</h3>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/rNeFqol.png" alt="Final timeline visualization" width="351" height="250" /></p>
+<p>The timeline visualization went through the most iteration, due to the complexity of what was being conveyed. After lots of back and forth between different options, we settled on using a diverging color palette to represent which party made the change (reds for the union, blues for the university) and the number of changes made relative to the maximum changes that article went through.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/RFvGsZq.png" alt="Grouping dropdown select and tooltip" width="402" height="200" /></p>
+<p>The articles are grouped by theme. We initially tried to do all 41 articles in one visualization, but it was severely cramped and difficult to read. We found that groups of 4-7 were optimal, so we made the thematic groups and a dropdown to swap between them. Hovering over a bar shows what date the changes were made, how many were made, and how much time there was until the next change. "Present" is represented as May 30, 2025, as (to our knowledge) there have not been any changes to the contract proposal after that date.</p>
+<p style="text-align: center;"><img src="https://i.imgur.com/wJVQh7q.png" alt="Default proposal exploration view" width="443" height="200" /></p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/9CGkxBs.png" alt="Proposal examination view after selecting a bar" width="442" height="200" /></p>
+<p>Selecting any bar in the timeline opens up an examination of what changed in that article on that date, as well as a summary the final version of the article.</p>
+<h3>Stipends</h3>
+<p><img src="https://i.imgur.com/e6lkcOw.png" alt="Line chart depicting the change of Boston-area PhD stipends since 2011" width="397" height="250" /></p>
+<p><img src="https://i.imgur.com/E3JpIcc.png" alt="Line chart depicting changes in Northeastern PhD stipends since 2013" width="378" height="250" /></p>
+<p>Both stipend-related charts are line charts, showing the change over time since our earliest data.</p>
 <h2>Data Analysis</h2>
 <h2>Conclusion</h2>

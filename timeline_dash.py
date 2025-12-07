@@ -172,7 +172,7 @@ def negotiation_timeline(negotiations:pd.DataFrame, times:list[pd.Timestamp],
     """
     
     # Pull subset based on article group
-    subset = negotiations[negotiations["Group"] == grouping_]
+    subset = negotiations[negotiations["Group"] == grouping_].copy()
     subset['Duration'] = (subset['End Date'] - subset['Start Date']).dt.days
     
     # Consistent color dict of parties involved
@@ -256,7 +256,7 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
         go.Figure: table chart with specific topic and the change made
     """
     # Choosing a subset of the data based on article/date
-    subset = negotiations[(negotiations["Article"] == article) & (negotiations["Date"] == date)]
+    subset = negotiations[(negotiations["Article"] == article) & (negotiations["Date"] == date)].copy()
     
     # selecting party for color, keeping consistent with established color theme
     # but lightening it a little so that the text shows up and is readable
@@ -460,17 +460,23 @@ def timeline_negotiations():
     
     # Topic group descriptions
     TOPIC_DESCRIPTIONS = {
+        
         'Union (General)': 'The organization of the union and recognition by the university',
-        'Union (Legal)': 'How the contract legally binds both parties',
-        'Employment (Requirements)': 'What is a graduate student worker required to do as an employee of the university',
-        'Employment (Rights)': 'What does a graduate student worker get as part of their work',
-        'Employment (Protections)': "How are graduate student workers' rights protected",
-        "Academic": 'Tuition and intellectual property/academic freedom',
-        "Benefits": 'What are the benefits for being a graduate student worker'
+        'Union (Legal)': 'How the contract is created between both parties and enforced',
+
+        'Employment (Requirements)': 'What a graduate student worker is required to do as an employee of the university',
+        'Employment (Rights)': 'What a graduate student worker gets as part of their working environment',
+        'Employment (Protections)': "How graduate student workers' rights are protected, both physically and legally",
+        
+        # "Academic": 'Tuition and intellectual property/academic freedom',
+        "Academic": 'Tuition, intellectual property, and academic freedom',
+
+        "Benefits": 'The benefits for being a unionized graduate student worker'
     }
     
     def summarize_topic(topic):
         return TOPIC_DESCRIPTIONS.get(topic, "")
+    
     
     # Default timeline is all dates, with a selected group
     timeline = negotiation_timeline(negotiations, TIMES, 

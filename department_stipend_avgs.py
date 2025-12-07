@@ -116,7 +116,7 @@ def department_stipend_avgs():
                 color="Department",
                 color_discrete_sequence=px.colors.qualitative.Pastel,
                 markers=True,
-                height=700,
+                #height=500,
                 custom_data=["Department", "Pay Rounded", "College"]
             )
             

@@ -139,7 +139,6 @@ See requirements.txt for required libraries that may need to be installed.
         - [ ] Per topic explanation tooltip stating what something is A
     - [ ] Dropdown to choose between topics
         - [ ] Add explanation of groupings
-        - [ ] For 3 employment groups, give explanation and theme
     - [x] Wrap topic titles
     - [x] Arrow to either axis or bars
     - [x] Add explicit scrollbar to the table or subtitle explaining it

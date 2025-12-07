@@ -4,6 +4,7 @@ import plotly.express as px
 from dash import Dash, dcc, html, Input, Output, callback
 import pandas as pd
 import plotly.graph_objs as go
+import dash_bootstrap_components as dbc
 
 '''--------------------- Data Processing ---------------------'''
 def timeline_data():
@@ -304,131 +305,82 @@ def time_changes_table(negotiations:pd.DataFrame, article:str, date:str):
 
 def final_changes_table(negotiations:pd.DataFrame, article:str):
     """
-    Creates a table with the text of all the changes to the article on a given date
+    Creates a table with the most recent summaries for all topics within an article
 
     Args:
-        negotiations (pd.DataFrame): contract change data
+        negotiations (pd.DataFrame): contract change data (for compatibility)
         article (str): specific article
 
     Returns:
-        go.Figure: table chart with specific topic and the change made
+        go.Figure: table chart with most recent summaries for all topics in the article
     """
-    # Choosing a subset of the data based on article/date
-    last_date = negotiations[negotiations["Article"] == article]['Start Date'].max()
-    if last_date == pd.to_datetime('2025-05-30'):
-        ld_formatted = "Present"
-    else:
-        ld_formatted = last_date.date().strftime("%m/%d/%Y")
-    final_changes:pd.DataFrame = negotiations.loc[(negotiations["Article"] == article) & (negotiations["Start Date"] == last_date)]
-    # selecting party for color, keeping consistent with established color theme
-    # but lightening it a little so that the text shows up and is readable
-    party = final_changes["Party"].unique().tolist()
-    if len(party) > 1 or party[0] == 'Tentative Agreement':
-        head_color = 'aquamarine',
-        header_title = f"<b>Most Recent (Tentative Agreement, {ld_formatted})</b>"
-    elif party[0] == 'Union':
-        head_color = 'cornflowerblue',
-        header_title = f"<b>Most Recent (Union, {ld_formatted})</b>"
-    else:
-        head_color='lightcoral',
-        header_title= f"<b>Most Recent (University, {ld_formatted})</b>"
+    # Load the recent summaries CSV
+    summaries = pd.read_csv("data/contract_recent_summaries.csv")
     
-    # table
+    # Filter to get all topics for this article
+    article_summaries = summaries[summaries["Article"] == article]
+    
+    if article_summaries.empty:
+        # If no summaries found, return empty figure
+        return go.Figure()
+    
+    # Parse party and date from the first summary to determine color
+    # (assuming all topics in an article have the same party/date for the most recent change)
+    first_summary = article_summaries["Summary"].values[0]
+    
+    if first_summary.startswith("Tentative Agreement:"):
+        head_color = 'aquamarine'
+        header_title = "<b>Most Recent Language</b>"
+    elif first_summary.startswith("Union ("):
+        head_color = 'cornflowerblue'
+        import re
+        date_match = re.search(r'\((\d{2}-\d{2}-\d{2})', first_summary)
+        date_str = f", {date_match.group(1)}" if date_match else ""
+        header_title = f"<b>Most Recent Language (Union{date_str})</b>"
+    elif first_summary.startswith("University ("):
+        head_color = 'lightcoral'
+        import re
+        date_match = re.search(r'\((\d{2}-\d{2}-\d{2})', first_summary)
+        date_str = f", {date_match.group(1)}" if date_match else ""
+        header_title = f"<b>Most Recent Language (University{date_str})</b>"
+    else:
+        # Default if format doesn't match
+        head_color = 'lightgray'
+        header_title = "<b>Most Recent Language</b>"
+    
+    # Clean the summary text (remove the party/date prefix) for all summaries
+    clean_summaries = []
+    for summary in article_summaries["Summary"]:
+        clean_summary = re.sub(r'^(Tentative Agreement|Union \([^)]+\)|University \([^)]+\)):\s*', '', summary)
+        clean_summaries.append(clean_summary)
+    
+    # Create table with two columns: Topic and Summary
     fig = go.Figure(data=go.Table(
-        header=dict(values=[header_title], fill_color=head_color, align='left'),
+        header=dict(
+            values=["<b>Topic</b>", header_title], 
+            fill_color=head_color, 
+            align='left'
+        ),
         cells=dict(
             values=[
-                final_changes["Changes from Previous Version"]
+                article_summaries["Topic"].tolist(),  # Topics column
+                clean_summaries  # Cleaned summaries column
             ], 
             align='left',
-        )
+        ),
+        columnwidth=[0.25, 0.75]  # Adjust column widths: 25% for topics, 75% for summaries
     ))
     
-    # adding and formatting table title, adjusting margins to use full space
+    # Adding and formatting table title, adjusting margins to use full space
     fig.update_layout(
-        title=" ", # Most recent changes
+        title=" ",  # Most recent changes
         height = 500,
         margin={'t':90,'l':0,'b':0,'r':0}
     )
-    # increasing font size
+    # Increasing font size
     fig.update_traces(cells_font=dict(size = 15), header_font = dict(size = 15))
     
     return fig
-
-'''--------------------- Changes Bar Chart Figure ---------------------'''
-
-def time_changes_bars(negotiations:pd.DataFrame, article:str):
-    """
-    Creates a bar chart showing the number of changes over time for a given article
-
-    Args:
-        negotiations (pd.DataFrame): contract change data
-        article (str): specific article to examine
-
-    Returns:
-        go.Figure: bar chart with x-axis of dates and y-axis of count of change
-    """
-    # select subset of data based on article, using "mean" to get the value of the change count per date
-    subset = negotiations[(negotiations["Article"] == article)][['Start Date', 'Party', 'Change Count']]\
-        .groupby(['Start Date', 'Party']).mean().reset_index()
-
-    # Consistent color dict of parties involved
-    colordict = {'Union':px.colors.qualitative.Plotly[0], 
-                'University':px.colors.qualitative.Plotly[1],
-                'Tentative Agreement':px.colors.qualitative.Plotly[2]}
-    
-    # generating the bar chart
-    fig = px.bar(
-        subset,
-        x='Start Date',
-        y='Change Count',
-        color = 'Party',
-        color_discrete_map=colordict,
-        custom_data=["Party"],
-        title= "<br>".join(textwrap.wrap(f"Changes to the {article} article", width=40))
-    )
-    
-    # Integers only on the y-axis
-    fig.update_yaxes(
-        tickmode='linear',
-        dtick=2,
-        tickformat = ',d'
-    )
-    
-    # Updating tooltip to show relevant data
-    fig.update_traces(hovertemplate= 
-                        "<b>Party:</b> %{customdata[0]} <br>" +
-                        "<b>Date: </b> %{x} <br>" +
-                        "<b>Duration until next change:</b> %{width|%d} days<br>" +
-                        "<b>Number of changes:</b> %{y}<extra></extra>")
-    
-    # setting bar width to be a fixed size
-    ## apparently plotly does this in milliseconds for time data???
-    fig.update_traces(
-        width = [1000 * 3600 * 24 * 9 for x in range(len(subset))]
-    )
-    
-    # Legend is labeled with total number of changes
-    fig.update_legends(
-        title_text = f"Total changes: {int(subset['Change Count'].sum())}<br>",
-        orientation = "h",
-        yanchor = "bottom",
-        y = -0.5,
-    )
-    # updating margins for spacing
-    fig.update_layout(
-        margin={'t':75,'l':5,'b':0,'r':0}
-    )
-    return fig
-    
-import numpy as np
-import textwrap
-import plotly.express as px
-from dash import Dash, dcc, html, Input, Output, callback
-import pandas as pd
-import plotly.graph_objs as go
-
-# ... [Previous data processing functions remain the same] ...
 
 def create_instruction_prompt():
     """
@@ -481,21 +433,19 @@ def timeline_negotiations():
     
     TOPICS = sorted(negotiations["Group"].unique())
     
+    # Topic group descriptions
+    TOPIC_DESCRIPTIONS = {
+        'Union (General)': 'The organization of the union and recognition by the university',
+        'Union (Legal)': 'How the contract legally binds both parties',
+        'Employment (Requirements)': 'What is a graduate student worker required to do as an employee of the university',
+        'Employment (Rights)': 'What does a graduate student worker get as part of their work',
+        'Employment (Protections)': "How are graduate student workers' rights protected",
+        "Academic": 'Tuition and intellectual property/academic freedom',
+        "Benefits": 'What are the benefits for being a graduate student worker'
+    }
     
     def summarize_topic(topic):
-        TOPIC_SUMMARIES = {
-            'Union (General)': 'The organization of the union and recognition by the university',
-            'Union (Legal)': 'How the contract legally binds both parties',
-
-            'Employment (Requirements)': 'What is a graduate student worker required to do as an employee of the university',
-            'Employment (Rights)': 'What does a graduate student worker get as part of their work',
-            'Employment (Protections)': "How are graduate student workers' rights protected",
-
-            "Academic": 'Tuition and intellectual property/academic freedom',
-
-            "Benefits": 'What are the benefits for being a graduate student worker'
-        }
-        return TOPIC_SUMMARIES[topic]
+        return TOPIC_DESCRIPTIONS.get(topic, "")
     
     # Default timeline is all dates, with a selected group
     timeline = negotiation_timeline(negotiations, TIMES, 
@@ -505,56 +455,80 @@ def timeline_negotiations():
     # Create instruction prompt instead of default tables
     instruction_prompt = create_instruction_prompt()
     
-    # Dash layout
+    # Dash layout with improved dropdown section
     layout = html.Div([
         html.Div([
-        # group dropdown select
-        dcc.Dropdown(
-            options = sorted(negotiations["Group"].unique().tolist()),
-            value="Employment (Requirements)", 
-            id='timeline-group')], style={'width': '49%', 'display': 'inline-block'}),
-        dcc.Markdown(
-            summarize_topic("Employment (Requirements)"),
-            id = 'onscreen-text',
-            style={'width': '35%', 'display': 'inline-block', "margin-left": "1rem"}
-        ),
+            dbc.Row([
+                dbc.Col([
+                    html.Label("Select Topic Group:", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                    dcc.Dropdown(
+                        options=sorted(negotiations["Group"].unique().tolist()),
+                        value="Employment (Requirements)", 
+                        id='timeline-group'
+                    )
+                ], width=5),
+                dbc.Col([
+                    html.Div([
+                        html.I(className="fas fa-info-circle", 
+                               style={'color': '#007bff', 'marginRight': '8px', 'fontSize': '16px'}),
+                        html.Span(
+                            summarize_topic("Employment (Requirements)"),
+                            id='topic-description',
+                            style={
+                                'fontSize': '14px', 
+                                'color': '#495057',
+                                'fontStyle': 'italic'
+                            }
+                        )
+                    ], style={
+                        'padding': '10px 15px',
+                        'backgroundColor': '#f8f9fa',
+                        'borderRadius': '5px',
+                        'border': '1px solid #dee2e6',
+                        'marginTop': '28px'
+                    })
+                ], width=7)
+            ])
+        ], style={'marginBottom': '20px'}),
+        
         # main timeline graph
         dcc.Graph(
             figure=timeline,
             id="negotiation-timeline"
-            # Removed default clickData
         ),
         
         # dates slider, evenly spaced
         html.Div([
             html.Div([
                 dcc.RangeSlider(
-                    min = 0,
-                    max = len(TIMES)-1,
+                    min=0,
+                    max=len(TIMES)-1,
                     step=1,
                     value=[0, len(TIMES)-1],
-                    marks = dict((each, {"label": str(date.date().strftime("%m/%d/%y")), 
-                                        "style":{"transform": "rotate(20deg)"}})
-                            if each is not len(TIMES) - 1 \
-                            else (each, {"label": "Present", "style":{"transform": "rotate(20deg)"}})\
+                    marks=dict((each, {"label": str(date.date().strftime("%m/%d/%y")), 
+                                      "style":{"transform": "rotate(20deg)"}})
+                            if each is not len(TIMES) - 1 
+                            else (each, {"label": "Present", "style":{"transform": "rotate(20deg)"}})
                             for (each, date) in enumerate(TIMES)),
                     id="timeline-slider",
-                ),], style={'padding':'2rem 2rem', 'marginBottom': '35px'}),
-            # sub-tables (linked to timeline) - now showing instructions by default
+                ),
+            ], style={'padding':'2rem 2rem', 'marginBottom': '35px'}),
+            
+            # sub-tables (linked to timeline)
             html.Div([
                 html.Div(id='left-content-container', 
-                    children=instruction_prompt,  # Default to instructions
+                    children=instruction_prompt,
                     style={
-                        'width': '63%', 
+                        'width': '49%', 
                         'display': 'inline-block',
                         "overflowY": "auto",
                         'overflowX': 'hidden',
                         'minHeight': '500px'
                     }),
                 html.Div(id='right-content-container',
-                    children=html.Div(),  # Empty by default
+                    children=html.Div(),
                     style={
-                        'width': '35%', 
+                        'width': '49%', 
                         'float':'right', 
                         'display': 'inline-block', 
                         "overflowY": "auto",
@@ -564,18 +538,21 @@ def timeline_negotiations():
         ])
     ])
     
-    # select date range and article group
+    # UPDATED CALLBACK: Now also updates the description
     def tl_slidergroup_callback(app):
         @app.callback(
             Output("negotiation-timeline", "figure"),
-            Output("onscreen-text", "children"),
-            Input("timeline-slider", "value"), # dates
-            Input('timeline-group', 'value'), # "group" of attributes
+            Output("topic-description", "children"),
+            Input("timeline-slider", "value"),
+            Input('timeline-group', 'value'),
             suppress_callback_exceptions=True
         )
         def update_timeline(dates, group):
-            return negotiation_timeline(negotiations, TIMES, 
-                                        [TIMES[dates[0]], TIMES[dates[1]]], group), summarize_topic(group)
+            return (
+                negotiation_timeline(negotiations, TIMES, 
+                                   [TIMES[dates[0]], TIMES[dates[1]]], group), 
+                summarize_topic(group)
+            )
     
     # update content containers
     def tl_content_callback(app):
@@ -588,25 +565,21 @@ def timeline_negotiations():
         )
         def update_content(clickData):
             if clickData is None or 'points' not in clickData:
-                # Return instruction prompt if no data selected
                 return create_instruction_prompt(), html.Div()
             
             try:
                 article = clickData["points"][0]['customdata'][0]
                 date = clickData["points"][0]['customdata'][1]
                 
-                # Create the table and final changes content
                 table_fig = time_changes_table(negotiations, article, date)
                 final_fig = final_changes_table(negotiations, article)
                 
-                # Wrap figures in dcc.Graph components
                 left_content = dcc.Graph(figure=table_fig, id='changes-table')
                 right_content = dcc.Graph(figure=final_fig, id='final-changes')
                 
                 return left_content, right_content
                 
             except (KeyError, IndexError):
-                # If there's an error parsing the click data, show instructions
                 return create_instruction_prompt(), html.Div()
         
     title = "How have contract negotiations progressed over time?"

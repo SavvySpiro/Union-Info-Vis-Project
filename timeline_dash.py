@@ -636,6 +636,6 @@ def timeline_negotiations():
                 return create_instruction_prompt(), html.Div()
         
     title = "How have contract negotiations progressed over time?"
-    subtitle = "Use the dropdown to filter by topic group. Click on a bar in the timeline to see the specific changes made to that article on that date."
+    subtitle = "Use the dropdown to filter by topic group. Click on a bar in the timeline to see the specific changes made to that article on that date. \"No change\" indicates a section where one party accepted a change the other party drafted in a previous iteration."
     
     return layout, [tl_slidergroup_callback, tl_content_callback], title, subtitle

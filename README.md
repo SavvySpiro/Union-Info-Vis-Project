@@ -49,7 +49,7 @@ See requirements.txt for required libraries that may need to be installed.
 
 ## Tasks:
 - [ ] Miscellaneous/post-user feedback tasks
-    - [ ] Add arrows to timeline for clarity N
+    - [x] Add arrows to timeline for clarity N
     - [x] Label clickable boxes A
     - [x] Dynamic box configuration 
     - [ ] Add instructions on how to navigate to the more complicated vis N
@@ -82,7 +82,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Tooltips
         - [x] add year annotation on tooltip
     - [x] Data selection
-- [ ] Stipends by Department over Time
+- [x] Stipends by Department over Time
     - [x] Title
     - [x] Subtitle
     - [x] Legend
@@ -98,7 +98,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Tooltips
         - [x] add year: year
     - [x] Data selection
-    - [ ] [WISHLIST] add option to filter by department vs college
+    - [x] [WISHLIST] add option to filter by department vs college
     - [ ] [WISHLIST] add violin-plot style tubes on departments self report
 - [x] benefits contract comparison
     - [x] Title
@@ -126,7 +126,7 @@ See requirements.txt for required libraries that may need to be installed.
         - [x] subtitle with instructions on subplot
     - [x] Legend
     - [x] Color scheme
-        - [ ] union as red(?) (rejected; red for NEU, blue for union, green for agreement)
+        - [x] union as red(?) (rejected; red for NEU, blue for union, green for agreement)
     - [x] Labels
         - [x] Labels are cut off 
     - [x] Annotations (ex: extra dotted lines, arrows)
@@ -141,7 +141,7 @@ See requirements.txt for required libraries that may need to be installed.
         - [ ] Add explanation of groupings
         - [ ] For 3 employment groups, give explanation and theme
     - [x] Wrap topic titles
-    - [ ] Arrow to either axis or bars
+    - [x] Arrow to either axis or bars
     - [x] Add explicit scrollbar to the table or subtitle explaining it
     - [ ] Add text explanation of "no change"
     - [x] Sub-table 

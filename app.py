@@ -437,10 +437,12 @@ jump_modal_layout = dbc.Modal(
                                 "border": "none",
                                 "borderRadius": "5px",
                                 "cursor": "pointer",
-                                "fontSize": "0.9rem"
+                                "fontSize": "0.9rem",
+                                "justifyContent": "center",
+                                "display": "inline-block"
                             }
                         )
-                    ], style={"flex": "1", "paddingRight": "20px"}),
+                    ], style={"flex": "1", "paddingRight": "20px", "justifyContent": "center"}),
                 ], style={
                     "display": "flex", 
                     "alignItems": "center",

@@ -422,6 +422,48 @@ def time_changes_bars(negotiations:pd.DataFrame, article:str):
     )
     return fig
     
+import numpy as np
+import textwrap
+import plotly.express as px
+from dash import Dash, dcc, html, Input, Output, callback
+import pandas as pd
+import plotly.graph_objs as go
+
+# ... [Previous data processing functions remain the same] ...
+
+def create_instruction_prompt():
+    """
+    Creates an instruction prompt to display instead of empty tables
+    """
+    return html.Div([
+        html.Div([
+            html.I(className="fas fa-hand-pointer fa-3x", style={'color': '#007bff', 'marginBottom': '20px'}),
+            html.H4("Select a Proposal to Explore", style={'color': '#333', 'marginBottom': '15px'}),
+            html.P("Click on any bar in the timeline above to view:", style={'fontSize': '16px', 'color': '#666'}),
+            html.Ul([
+                html.Li("Detailed changes made on that date", style={'marginBottom': '8px'}),
+                html.Li("The party who proposed the changes", style={'marginBottom': '8px'}),
+                html.Li("Topic-by-topic breakdown of modifications", style={'marginBottom': '8px'})
+            ], style={'textAlign': 'left', 'display': 'inline-block', 'fontSize': '15px', 'color': '#666'}),
+            html.Hr(style={'margin': '25px 0', 'opacity': '0.3'}),
+            html.P([
+                html.I(className="fas fa-info-circle", style={'marginRight': '8px'}),
+                "Tip: Use the dropdown above to filter by different topic groups"
+            ], style={'fontSize': '14px', 'color': '#888', 'fontStyle': 'italic'})
+        ], style={
+            'textAlign': 'center',
+            'padding': '60px 40px',
+            'backgroundColor': '#f8f9fa',
+            'borderRadius': '10px',
+            'border': '2px dashed #dee2e6',
+            'height': '400px',
+            'display': 'flex',
+            'flexDirection': 'column',
+            'justifyContent': 'center',
+            'alignItems': 'center'
+        })
+    ], style={'height': '100%'})
+
 '''--------------------- Dash Components ---------------------'''
 def timeline_negotiations():
     """
@@ -441,17 +483,12 @@ def timeline_negotiations():
     TOPICS = sorted(negotiations["Group"].unique())
     
     # Default timeline is all dates, with a selected group
-    # Group has 'Appointments and Reappointments' in it, to match the default linked charts
     timeline = negotiation_timeline(negotiations, TIMES, 
                                     [negotiations["Start Date"].min(), 
                                     negotiations["End Date"].max()], "Employment (Requirements)")
     
-    # Picked a starting table to show
-    table = time_changes_table(negotiations, 'Appointments and Reappointments', '3/15/2024')
-    
-    # matching default bar chart to the changes table
-    #num_changes = time_changes_bars(negotiations, 'Appointments and Reappointments')
-    final_changes = final_changes_table(negotiations, 'Appointments and Reappointments')
+    # Create instruction prompt instead of default tables
+    instruction_prompt = create_instruction_prompt()
     
     # Dash layout
     layout = html.Div([
@@ -464,8 +501,8 @@ def timeline_negotiations():
         # main timeline graph
         dcc.Graph(
             figure=timeline,
-            id="negotiation-timeline",
-            clickData={'points': [{'customdata': ['Article', 'Date']}]}
+            id="negotiation-timeline"
+            # Removed default clickData
         ),
         # dates slider, evenly spaced
         html.Div([
@@ -475,39 +512,35 @@ def timeline_negotiations():
                     max = len(TIMES)-1,
                     step=1,
                     value=[0, len(TIMES)-1],
-                    #'''marks = dict((k, v.date().strftime("%m/%d/%y")) if k is not len(TIMES) - 1
-                        #else (k, "Present") for (k,v) in enumerate(TIMES) ),'''
                     marks = dict((each, {"label": str(date.date().strftime("%m/%d/%y")), 
                                         "style":{"transform": "rotate(20deg)"}})
                             if each is not len(TIMES) - 1 \
                             else (each, {"label": "Present", "style":{"transform": "rotate(20deg)"}})\
                             for (each, date) in enumerate(TIMES)),
                     id="timeline-slider",
-                    
                 ),], style={'padding':'2rem 2rem', 'marginBottom': '35px'}),
-            # sub-tables (linked to timeline)
-            html.Div(
-                [html.Div([dcc.Graph(
-                    figure = table,
-                    id='changes-table'
-                )], style={
-                    'width': '63%', 
-                    'display': 'inline-block',
-                    "overflowY": "scroll",
-                    'overflowX': 'hidden'
+            # sub-tables (linked to timeline) - now showing instructions by default
+            html.Div([
+                html.Div(id='left-content-container', 
+                    children=instruction_prompt,  # Default to instructions
+                    style={
+                        'width': '63%', 
+                        'display': 'inline-block',
+                        "overflowY": "auto",
+                        'overflowX': 'hidden',
+                        'minHeight': '500px'
                     }),
-                html.Div([dcc.Graph(
-                    # figure = num_changes,
-                    # id='changes-bar'
-                    figure=final_changes,
-                    id='final-changes'
-                )], style={'width': '35%', 
-                           'float':'right', 
-                           'display': 'inline-block', 
-                           "overflowY": "scroll"})
-                ])
+                html.Div(id='right-content-container',
+                    children=html.Div(),  # Empty by default
+                    style={
+                        'width': '35%', 
+                        'float':'right', 
+                        'display': 'inline-block', 
+                        "overflowY": "auto",
+                        'minHeight': '500px'
+                    })
+            ])
         ])
-    
     ])
     
     # select date range and article group
@@ -522,45 +555,39 @@ def timeline_negotiations():
             return negotiation_timeline(negotiations, TIMES, 
                                         [TIMES[dates[0]], TIMES[dates[1]]], group)
     
-    # update changes table
-    def tl_table_callback(app):
+    # update content containers
+    def tl_content_callback(app):
         @app.callback(
-            Output('changes-table', 'figure'),
+            Output('left-content-container', 'children'),
+            Output('right-content-container', 'children'),
             Input('negotiation-timeline', 'clickData'),
             prevent_initial_call=True,
             suppress_callback_exceptions=True
         )
-        def update_table(clickData):
-            article = clickData["points"][0]['customdata'][0]
-            date = clickData["points"][0]['customdata'][1]
-            return time_changes_table(negotiations, article, date)
-    
-    # update 
-    def tl_final_callback(app):
-        @app.callback(
-            Output('final-changes', 'figure'),
-            Input('negotiation-timeline', 'clickData'),
-            prevent_initial_call=True,
-            suppress_callback_exceptions=True
-        )
-        def update_table(clickData):
-            article = clickData["points"][0]['customdata'][0]
-            return final_changes_table(negotiations, article)
-    
-    # # update change counts bars
-    # def tl_bars_callback(app):
-    #     @app.callback(
-    #         Output('changes-bar', 'figure'),
-    #         Input('negotiation-timeline', 'clickData'),
-    #         prevent_initial_call=True,
-    #         suppress_callback_exceptions=True
-    #     )
-    #     def update_bar(clickData):
-    #         article = clickData["points"][0]['customdata'][0]
-    #         return time_changes_bars(negotiations, article)
+        def update_content(clickData):
+            if clickData is None or 'points' not in clickData:
+                # Return instruction prompt if no data selected
+                return create_instruction_prompt(), html.Div()
+            
+            try:
+                article = clickData["points"][0]['customdata'][0]
+                date = clickData["points"][0]['customdata'][1]
+                
+                # Create the table and final changes content
+                table_fig = time_changes_table(negotiations, article, date)
+                final_fig = final_changes_table(negotiations, article)
+                
+                # Wrap figures in dcc.Graph components
+                left_content = dcc.Graph(figure=table_fig, id='changes-table')
+                right_content = dcc.Graph(figure=final_fig, id='final-changes')
+                
+                return left_content, right_content
+                
+            except (KeyError, IndexError):
+                # If there's an error parsing the click data, show instructions
+                return create_instruction_prompt(), html.Div()
         
     title = "How have contract negotiations progressed over time?"
     subtitle = "Use the dropdown to filter by topic group. Click on a bar in the timeline to see the specific changes made to that article on that date."
     
-    # NOTE: removed tl bars callback temporarily
-    return layout, [tl_slidergroup_callback, tl_table_callback, tl_final_callback], title, subtitle
+    return layout, [tl_slidergroup_callback, tl_content_callback], title, subtitle

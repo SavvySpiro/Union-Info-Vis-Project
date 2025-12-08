@@ -26,7 +26,7 @@ See requirements.txt for required libraries that may need to be installed.
 - [x] Bigger titles and subtitles A
 - [x] Fix timeline vis N
     - [x] Comparing changes?
-    - [ ] Explaining what "no change" means OR filter out with regex
+    - [x] Explaining what "no change" means OR filter out with regex
     - [x] Drop bar chart, add another column to table to show previous changes
     - [x] On main timeline, opacity = # changes?
 - [ ] Update stipend visualizations A
@@ -36,7 +36,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Unique emojis
     - [x] Legend at bottom of what emojis are
     - [x] Include corresponding emoji in title of bar chart
-- [ ] Write instructions for use at top N
+- [x] Write instructions for use at top N
 - [x] Table of contents at top/links to diff vis boxes A
 - [x] More explanations for vis/longer captions (e.g. explain groupings in timeline) N
 - [x] Titles on boxes A
@@ -55,7 +55,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Add instructions on how to navigate to the more complicated vis N
     - [ ] More visualizations? AN
     - [ ] Write paper AN
-    - [ ] Do demo A
+    - [x] Do demo A
     - [ ] Do presentation N
     - [x] Desaturated background on all charts N
     - [x] Deliberate abt color scheme AN
@@ -119,7 +119,7 @@ See requirements.txt for required libraries that may need to be installed.
         - [x] on-hover show explanation of what a benefit means
     - [x] Data selection
         - [x] Filter by network buttons
-- [ ] Timeline
+- [x] Timeline
     - [x] Title
     - [x] Subtitle
         - [x] in instructions, make it obvious what you can click
@@ -134,7 +134,7 @@ See requirements.txt for required libraries that may need to be installed.
     - [x] Axis labels
     - [x] Axes 
         - [x] In the subtable, add current and end changes
-    - [ ] Tooltips
+    - [x] Tooltips
         - [x] Add duration until next change
         - [x] Per topic explanation tooltip stating what something is A
     - [x] Dropdown to choose between topics

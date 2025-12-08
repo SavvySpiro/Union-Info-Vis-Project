@@ -1,68 +1,216 @@
 <h1 style="text-align: center;">See What's at Stake: Northeastern/GENU-UAW Contract Proposal Visualized</h1>
 <h3 style="text-align: center;">Alenna Spiro, Noah Rae-Grant</h3>
 <h3 style="text-align: center;">CS 7250 Fall 2025 Final Project</h3>
-<p>Unlike traditional contract negotiations which are article-by-article, Northeastern University released a complete 'Final' contract proposal all at once. Our dashboard visualizes key provisions to help union members and curious graduate students understand what's being offered.&nbsp;</p>
+<p>Unlike traditional contract negotiations which are article-by-article, 
+    Northeastern University released a complete 'Final' contract proposal all at once. 
+    Our dashboard visualizes key provisions to help union members and curious graduate students understand what's being offered.&nbsp;</p>
 <h2>Motivation</h2>
-<p>When we first were planning this project, both of us were coming at it from the angle of being the target audience. We had heard about the union a bit, but we didn't know what state the contract negotiations were in, why it was taking so long, and what graduate student workers would get out of the contract.</p>
-<p>After interviewing a few union members, we realized our visualization should do two things: explain the contract, and be a source of information for incoming graduate students. The union has primarily done grassroots outreach through labs, which makes it difficult to reach masters students or students in labs where there is no current presence. Having a webpage that can supplement the grassroots outreach will be helpful in reaching those two audiences.</p>
-<p>During our interviews, we also found out that one of the current negotiation stumbling blocks was healthcare, and we were asked to compare Northeastern's health plan to other area universities.</p>
+<p>The two of us are both graduate student workers at Northeastern University, and we were curious
+     about the ongoing contract negotiations between the Graduate Employees' 
+     Network Union (GENU-UAW) and Northeastern University. As graduate student workers,
+      the outcome of these negotiations would directly impact us, so we wanted to 
+      better understand what was being proposed.</p> 
+    We were both familiar with the existence of the union but we didn't know what state the contract negotiations were in,
+     why it was taking so long, or what graduate student workers would benefit from in the contract.</p>
+<p>After interviewing a few union members, we realized our primary goal should be creating a visualization that serves as a tool to inform and engage graduate student workers. The union has primarily
+     done grassroots outreach through labs, which makes it difficult to reach masters students or students in labs 
+     where there is no current presence. If the union does have the opportunity to speak to a student and that student wants to learn more, reading through the full contract proposals on the GENU-UAW's website is
+     time consuming and complex. Having a visualization dashboard that can supplement the grassroots outreach and communicate negotiations quickly and effectively will be helpful
+      in educating the graduate union members.</p>
+<p>As part of this primary goal, we asked our interviewees about current issues they would like to focus on communicating with the graduate student workers.
+     They had several key messages: The first was to communicate the back-and-forth nature of the negotiations, as many students were under the impression that the union was not effective, when
+     in reality Northeastern had returned several full contract proposals, which was unorthodox compared to traditional per-article negotiations. The second was to
+    show students the current disparity between the graduate student stipends and the living wage in this area. Expanding off of that, some departments are significantly underfunded compared to others,
+     which was a concern for some union members. Finally, one of their big concerns was to communicate the healthcare benefits they are asking for from the university to other local universities. 
+    They had tried to communicate these healthcare benefits in the past, but their visualizations were not effective in retaining student involvement. </p>
 <h2>Data</h2>
-<p>For this project, we predominantly focused on the contract and its various iterations, but we also incorporated:</p>
+<p>For this project, we predominantly focused on the contract and 
+    its various iterations, but we also incorporated:</p>
 <ul>
-<li>Self-reported stipend data from <a href="https://www.phdstipends.com/">phdstipends.com</a>&nbsp;from 2011-2025 for Northeastern and other Boston-area students</li>
+<li>Self-reported stipend data from <a href="https://www.phdstipends.com/">phdstipends.com</a>&nbsp;from 
+    2011-2025 for Northeastern and other Boston-area students</li>
 <li>2025 health plan information from Boston-area universities</li>
 </ul>
-<p><em>AI Disclosure:&nbsp;</em>For the task of turning the contract into data, we did use the Claude LLM for two things: finding the differences between each iteration of the contract, and summarizing the final versions of the different articles. This was the only use of LLM tools in our project.</p>
-<p>The final contract data encompasses the articles, the topic of what was changed within each article, the date it was changed, the party that made the change, and a short summary of what was changed. Each of these articles was grouped into a larger themed group (such as "Employment (Requirements)" or "Benefits") for display purposes.</p>
-<p>The Boston-area universities we are using for comparison are the Massachusetts Institute of Technology (MIT), Boston University (BU), Harvard, University of Massachusetts Boston (UMass), and Tufts University. We chose these universities because they are also unionized, and those unions have or are in the process of negotiating contracts.&nbsp;</p>
-<p>Due to the nature of the stipend data being self-reported, it can be somewhat erratic and inconsistent. However, we felt that it does successfully show the general trend of how stipends grow but still remain between the living wage for a single person in the area, as calculated by the <a href="https://livingwage.mit.edu/">MIT Living Wage Calculator</a>.</p>
+<p><em>AI Disclosure:&nbsp;</em>For the task of turning the contract into data, we did use 
+    the Claude LLM for two things: finding the differences between each iteration of the contract,
+     and summarizing the final versions of the different articles. This was the only use of LLM tools in our project.</p>
+<p>The final contract data contains entries consisting of each article, the sub-topics which were changed within each 
+    article, the date it was changed, the party that made the change, and a short summary of what was changed. 
+    Each of these articles was grouped into a larger themed group (such as "Employment (Requirements)" or "Benefits")
+     for display purposes.</p>
+<p>The Boston-area universities we are using for comparison are the Massachusetts
+     Institute of Technology (MIT), Boston University (BU), Harvard, University of Massachusetts Boston
+      (UMass), and Tufts University. We chose these universities because they are local, unionized, and have 
+      or are in the process of negotiating contracts.&nbsp;</p>
+<p>Due to the nature of the stipend data being self-reported, it can be somewhat erratic and inconsistent. 
+    However, we felt that it does successfully show the general trend of how stipends grow but still remain
+     significantly below the living wage for a single person in the area, as calculated by the <a href="https://livingwage.mit.edu/">MIT Living Wage Calculator</a>. 
+    Unfortunately, previous years of the MIT Living Wage Calculation were not available online.</p>
 <h2>Task Analysis</h2>
-<p>At a high level, our primary task was to offer an explanation of the contract and a tool for graduate students to analyze it themselves. As part of this, we had to figure out how to compare to other local universities and what specific information we wanted to convey.</p>
-<p>To do this, we decided on three major topics we wanted to examine: stipends, healthcare, and the contract negotiations themselves. We would consider our project successful if a user was able to:</p>
+<p>At a high level, our primary task was to offer an explanation of the contract and a tool for graduate 
+    students to analyze it themselves. To do so, we had to figure out how to compare important aspects to other local
+     universities and what specific information we wanted to convey.</p>
+<p>We decided on three major topics we wanted to examine: stipends, healthcare, and the contract
+     negotiations themselves. We would consider our project successful if a user was able to:</p>
 <ul>
-<li>Compare stipend amounts between different Boston-area universities, as well as between departments and colleges within Northeastern</li>
+
+<li>Compare stipend amounts between different Boston-area universities, as well as between departments and 
+    colleges within Northeastern</li>
+
 <li>Compare what different Boston-area universities offered in their healthcare plans</li>
-<li>Explore what articles changed the most and how during the negotiations</li>
+<li>Explore how articles have changed over the course of negotiations to determine what benefits were gained or lost</li>
 </ul>
 <h2>Design Process</h2>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/qOejvHN.jpeg" alt="Post-it note sketches with a central contract framework surrounded by potential subplots" width="500" height="374" /></p>
-<p>While our original idea had everything as separate visualizations, the project came together when we decided to use the contract itself as our framework. Clicking on a part of the contract would pop out a chart that provides an explanation of that section or a comparison related to that section.</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/Fw7yN48.jpeg" alt="Whiteboard sketch of a timeline, with text bubbles at different points saying &quot;GENU did this&quot; and &quot;NEU did that&quot;" width="500" height="292" /></p>
-<p>The timeline ended up very different than our original sketch, due to the complexities of the negotiation. Our original line, with a single point for each time, ended up proving very insufficient for what we wanted to convey.</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/MYVD7R0.jpeg" alt="Whiteboard sketch of a line chart showing increasing PhD stipends, with a wiggly dashed line for inflation" width="500" height="292" /></p>
-<p>We spent a while trying to get inflation working as part of our stipend visualizations, and we ended up having to scrap that part of our stipend idea. Instead, we added lines to compare the Massachusetts poverty line and the Boston-area living wage to our stipend data.</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/a4sqrEg.png" alt="Paper sketch of a unit chart to show healthcare benefits" width="500" height="532" /></p>
-<p>The unit chart for health plan benefits stayed reasonably close to its initial design, with largely aesthetic changes to make it clear. The upper portion of the chart shows benefits included in each plan, while the lower portion are items excluded from plans. Each icon represents a different element of a health plan, such as primary care, dental plans, or emergency room costs.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" 
+    src="https://i.imgur.com/qOejvHN.jpeg" 
+    alt="Post-it note sketches with a central contract framework surrounded by potential subplots" 
+    width="500" 
+    height="374" /></p>
+
+<p>While our original dashboard plan had separate visualizations akin to a traditional dashboard, 
+    the project shifted to a more cohesive design when we decided to use Northeastern's final proposal contract itself as our framework.
+     We devised that clicking on a part of the contract relevant to a visualization would pop out a chart which provides an explanation of 
+     that section or a comparison related to that section.</p>
+
+<p><img style="display: block; margin-left: auto; margin-right: auto;" 
+    src="https://i.imgur.com/Fw7yN48.jpeg" 
+    alt="Whiteboard sketch of a timeline, with text bubbles at different points saying &quot;GENU did this&quot; and &quot;NEU did that&quot;" 
+    width="500" height="292" /></p>
+
+<p>The timeline ended up very different than our original sketch, due to the complexities of the negotiation process. 
+    In our original sketches we designed a timeline with a single point for each negotiation event, which proved very insufficient for
+     the amount of information we wanted to convey.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/MYVD7R0.jpeg" 
+    alt="Whiteboard sketch of a line chart showing increasing PhD stipends, with a wiggly dashed line for inflation" width="500" height="292" /></p>
+<p>Along with the timeline, the stipend visualizations also went through several iterations. Initially we wanted to compare
+        stipends against inflation, but the data we had was not sufficient to do so accurately. Instead, we added horizontal lines 
+        to compare the Massachusetts poverty line and the Boston-area living wage to our stipend data.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/a4sqrEg.png" 
+    alt="Paper sketch of a unit chart to show healthcare benefits" width="500" height="532" /></p>
+<p>Our plan for comparing healthcare benefits manifested as a unit chart. 
+    The eventual visualization stayed reasonably close to its initial design, with 
+    largely aesthetic changes to make it clear. The upper portion of the chart shows benefits included
+     in each plan, while the lower portion are items excluded from plans. Each colored icon represents a different
+      element of a health plan, such as primary care, dental plans, or emergency room costs. In the original idea, 
+    we were going to enable multiple tooltips to appear on each university's corresponding matching topic on hover of one icon. 
+    Instead, we added a bar chart to show the difference between benefits quantitatively.</p>
 <h2>Final Visualization</h2>
 <p>## DEMO HERE</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/wUWRpyc.png" alt="Final landing page design" width="501" height="250" /><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/6l3qBQd.png" alt="Navigation tab" width="500" height="345" /></p>
-<p>Our final design allows a user to scroll through the current iteration of the contract. A yellow box indicates a clickable portion that will pop out a visualization. We also provide a table of contents at the top for quickly jumping between the different visualizations rather than scrolling.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/wUWRpyc.png"
+     alt="Final landing page design" width="501" height="250" />
+    <p>Our final design allows a user to scroll through Northeastern's most recent full proposal contract. At the top, 
+        we have included a short description of the negotiation context, explaining how traditional negotiations are conducted.
+        We have also included instructions on how to use the dashboard. On certain relevant
+        paragraphs,  A yellow box indicates a clickable portion that will pop out a visualization. The title of the visualization
+         is shown to the left of the corresponding box for context.</p>
+    <img style="display: block; margin-left: auto; margin-right: auto;" 
+     src="https://i.imgur.com/6l3qBQd.png" alt="Navigation tab" width="500" height="345" />
+    </p>To facilitate ease of use and to prevent users from missing important information, we provide a table of contents at the
+     top for quickly jumping between the different visualizations rather than scrolling. Clicking on the "Jump to Visualization" 
+    button opens a menu which displays the titles and descriptions of each visualization, allowing the user to choose which
+    visualization they would like to investigate and see in context.</p>
 <h3>Timeline</h3>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/rNeFqol.png" alt="Final timeline visualization" width="500" height="356" /></p>
-<p>The timeline visualization went through the most iteration, due to the complexity of what was being conveyed. Our usability testing showed that it was the most difficult to navigate and understand. Many users read it as a bar graph at first, or didn't understand why there was a particular subplot. After lots of back and forth between different options, we settled on using a diverging color palette to represent which party made the change (reds for the union, blues for the university) and the number of changes made relative to the maximum changes that article went through.</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/RFvGsZq.png" alt="Grouping dropdown select and tooltip" width="500" height="249" /></p>
-<p>The articles are grouped by theme. We initially tried to do all 41 articles in one visualization, but it was severely cramped and difficult to read. We found that groups of 4-7 were optimal, so we made the thematic groups and a dropdown to swap between them. Hovering over a bar shows what date the changes were made, how many were made, and how much time there was until the next change. "Present" is represented as May 30, 2025, as (to our knowledge) there have not been any changes to the contract proposal after that date.</p>
-<p style="text-align: center;"><img src="https://i.imgur.com/wJVQh7q.png" alt="Default proposal exploration view" width="500" height="226" /></p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/9CGkxBs.png" alt="Proposal examination view after selecting a bar" width="500" height="226" /></p>
-<p>Selecting any bar in the timeline opens up an examination of what changed in that article on that date, as well as a summary the final version of the article. Instead of the final version summary, our original design had a bar chart showing the number of changes over time, as our timeline initially did not have the diverging scale and the color was just determined based on party. Since that became a redundant encoding, we were able to add in the summary of the final article, which some of our test users mentioned they wanted to see.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/rNeFqol.png" 
+    alt="Final timeline visualization" width="500" height="356" /></p>
+<p>The timeline visualization went through the most iteration, due to the complexity of the negotiations we wished to convey. 
+    Our usability testing showed that the first iteration of the timeline was the most difficult to navigate and understand. 
+    We included the gantt chart, a table showing the individual sub-topic changes, and a bar chart showing the number of changes over time.
+    When a piece of the timeline was selected, it would update both of the sub-plots to show more detail about what changed on that date.</p>
+<p>
+    When exploring, users read the gantt chart as a horizontal bar graph, asked why the articles were grouped the way they were, 
+    and found the table of changes difficult to read due to its density. Additionally, the bar chart was redundant with the gantt chart, 
+    as both were showing the number of changes over time. Users requested the ability to compare between different article versions and more instrictions
+    on what is selectable in the visualization.</p>
+    To solve the issue of the bar chart interpretation, we added a simple arrow to change the meaning to a clear timeline interpretation. 
+    To incorporate information about the number of topic changes in each proposal, after lots of back and forth between different options, 
+    we settled on using a diverging color palette to represent which party made the change (reds for the union, blues for the university) and used opacity to represent the number of changes made relative to the maximum changes that article went through.
+    This way we could remove the bar chart sub-plot and replace it with a more informative table. We added a "Most Recent Language" table, meant to show
+    a summary of the latest version of this article, so that it could be easily compared with the selected changes. To remove
+    any ambiguity on the use of the chart, we added comprehensive instructions and prompted the user to choose an article to then see
+    the tables. </p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/RFvGsZq.png" 
+    alt="Grouping dropdown select and tooltip" width="500" height="249" /></p>
+<p> Visualized above is the dropdown containing all of the themed article groups. We initially tried to display all 41 articles
+     in one visualization, but it was severely cramped and difficult to read. We found that groups of 4-7 were optimal, 
+     so we made thematic groups and a dropdown to swap between them. After user feedback, we added a description of each group
+     explaining the general purpose of each set of articles. When interacting with the main gantt plot, hovering over a 
+     bar shows what date the changes were made, how many
+      were made, and how long it took until the return proposal from the opposite party.
+       "Present" is represented as May 30, 2025, as (to our knowledge) there have not been any
+        changes to the contract proposal after that date.</p>
+<p style="text-align: center;"><img src="https://i.imgur.com/wJVQh7q.png" alt="Default proposal exploration view"
+     width="500" height="226" /></p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/9CGkxBs.png" 
+    alt="Proposal examination view after selecting a bar" width="500" height="226" /></p>
+<p>When no bar is selected, instructions show to prompt the user to choose an article. 
+    Selecting any bar in the timeline opens up an examination of what changed in that article on that date, as
+     well as a summary the final version of the article.</p>
+<p>With this final version of the timeline, we hoped to encourage the users to be able to explore the contract negotiations, 
+    compare different versions of articles, and understand the back-and-forth nature of the negotiations.</p>
+</p>
 <h3>Stipends</h3>
-<p style="text-align: center;"><img src="https://i.imgur.com/e6lkcOw.png" alt="Line chart depicting the change of Boston-area PhD stipends since 2011" width="500" height="315" /></p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/E3JpIcc.png" alt="Line chart depicting changes in Northeastern PhD stipends since 2013" width="500" height="331" /></p>
-<p>Both stipend-related charts are line charts, showing the change over time since our earliest data. As noted in the "Data" section above, the stipend data is erratic due to the nature of being self-reported. To mitigate this as much as possible, we averaged the stipend amounts by university or department, filtered out certain departments that only had a single point of data, and grouped together some departments that were within the same college at Northeastern.</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/YEvvnzG.png" alt="Hover tooltip detail for the Boston-area university stipend chart" width="500" height="315" /></p>
-<p>Hovering over either chart opens up a tooltip displaying what the average pay was for that university or department during that year. The department-level chart can also be filtered by different Northeastern colleges, such as Khoury College of Computer Science or the College of Engineering.</p>
+
+<p>Both stipend-related charts are line charts, showing the change over time since our earliest data.
+    As noted in the "Data" section above, the stipend data is erratic due to the nature of being self-reported. 
+    To mitigate this as much as possible, we averaged the stipend amounts by university or department, 
+    filtered out certain departments that only had a single point of data, and grouped together some 
+    departments that were within the same college at Northeastern.</p>
+    <p style="text-align: center;"><img src="https://i.imgur.com/e6lkcOw.png" 
+    alt="Line chart depicting the change of Boston-area PhD stipends since 2011"
+     width="500" height="315" /></p>
+     <p>The Boston-area university stipend chart shows how the average stipend for each university has changed
+      since 2011. Horizontal lines indicate the Massachusetts poverty line and the Boston-area living wage
+       for a single person in 2025, to provide context for how these stipends compare to cost of living in the area.  
+       In our first iteration of this visualization, users noted that it was not obvious that the data was averages for each university,
+        so we added that to the title. Additionally, our original color scheme used several different bright hues for each university, 
+        but it was difficult to pick out Northeastern specifically. We changed the color scheme to have Northeastern in a bright red,
+        while the other universities are in more muted hues, so that we could use the pop-out effect. </p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/E3JpIcc.png" 
+    alt="Line chart depicting changes in Northeastern PhD stipends since 2013" width="500" height="331" /></p>
+<p>The Northeastern department-level stipend chart shows how average stipends have changed for different
+     departments at Northeastern since 2013 (the earliest year we had department-level data for).
+    In our first iteration, we had users asking for a way to filter by college as well as seeing each department. We were able to
+add that feature in our final iteration. </p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/YEvvnzG.png" 
+    alt="Hover tooltip detail for the Boston-area university stipend chart" width="500" height="315" /></p>
+<p>Hovering over either chart opens up a tooltip displaying what the average pay was for that university or 
+    department during that year.</p>
 <h3>Health Plan Benefits</h3>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/8A9buBV.png" alt="Unit chart depicting what Boston area university health plans offer" width="500" height="392" /></p>
-<p>The health plan unit chart went through a few iterations, finally ending up with the icon overview on the left and the detail bar chart on the right. We initially used a green/red color scheme, but given how we use red as a popout effect elsewhere, we decided to change it to blue/yellow on the advice of Prof. Borkin.</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/4DozQfb.png" alt="Detail view of the health plan benefits tooltip" width="500" height="292" /></p>
-<p>Hovering over an icon shows what that specific university's plan provides for that benefit, and clicking on it will open up the comparison bar chart showing how much is covered by each plan. For the bar chart, blue indicates a "good" benefit, such as lower cost co-pay or a larger amount covered by insurance.</p>
-<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/zv0YqGh.png" alt="Hover detail for health plan benefit legend" width="400" height="321" /></p>
-<p>Hovering over each item on the legend also provides an explanation of what that part of the plan covers. The health plans can be filtered by provider as well, in case someone wants to see if their preferred provider is within network.</p>
+<p>Our primary goal in comparing health plans was to express to student workers the differences in coverage and costs 
+    among the various plans available in the area. During the interview, the union workers had expressed that many
+students asked them about negotiating for dental and vision insurance, so we made sure to include those benefits in our comparison.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/8A9buBV.png" 
+    alt="Unit chart depicting what Boston area university health plans offer" width="500" height="392" /></p>
+<p>The health plan unit chart went through a few iterations, finally ending up with the icon overview on the 
+    left and the detail bar chart on the right. The icon unit chart is organized by university, showing included benefits above the 
+    center line and excluded below. Icons represent each type of benefit, additionally shown in the legend at the bottom right at 
+    the test users' requests. We initially used a green/red color scheme for good and bad connotation, 
+    but given how we use red as a popout effect elsewhere, we decided to change it to blue/yellow on the advice of Prof. Borkin.</p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/4DozQfb.png" 
+    alt="Detail view of the health plan benefits tooltip" width="500" height="292" /></p>
+<p>Hovering over an icon shows what that specific university's plan provides for that benefit, and clicking on 
+    it will open up the comparison bar chart showing how much is covered by each plan across all universities. 
+    For the bar chart, blue indicates a "good" benefit which exists above or below the mean (depending on the type of benefit chosen),
+     such as lower cost co-pay or a larger amount covered by insurance. </p>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://i.imgur.com/zv0YqGh.png" 
+    alt="Hover detail for health plan benefit legend" width="400" height="321" /></p>
+<p>Hovering over each item on the legend also provides an explanation of the healthcare terms for those not familiar with healthcare plan language. 
+    The health plans can be filtered by provider as well, in case someone wants to see if their preferred provider is within network.</p>
 <h2>Data Analysis</h2>
 <h3>Stipends</h3>
-<p>Given the data we have, we can see that Northeastern's 2025 overall average pay is slightly lower than other private universities in the area (due to its nature as a public university, UMass-Boston has a different pay scheme than other area universities). However, none of the stipends are near the calculated living wage of $63,942 for a single person in the Boston area, meaning almost all PhD students in the area would need to live with at least one other person. Stipends have overall gone up since 2011, and most are at least closer to the living wage than they are to the Massachusetts poverty line ($15,650 annual income).</p>
-<p>As for Northeastern-specific departments, the stipend amount varies depending on what college a program is in. For example, departments under the Khoury College of Computer Science tend to have a higher stipend than programs in the College of Social Sciences and Humanities. In 2023, the average computer science stipend was approximately $50,000, while the average political science stipend was $10k less at approximately $40,000.</p>
-<p>However, given our data's iconsistencies due to being self-reported date to a single specific site, this trend would require further examination.</p>
+<p>Given the data we have, we can see that Northeastern's 2025 overall average pay is slightly lower than other
+     private universities in the area (due to its nature as a public university, UMass-Boston has a different pay
+      scheme than other area universities). However, none of the stipends are near the calculated living wage of 
+      $63,942 for a single person in the Boston area, meaning almost all PhD students in the area would need to
+       live with at least one other person. Stipends have overall gone up since 2011, and most are at least closer
+        to the living wage than they are to the Massachusetts poverty line ($15,650 annual income).</p>
+
+<p>As for Northeastern-specific departments, the stipend amount varies depending on what college a program is in.
+     For example, departments under the Khoury College of Computer Science tend to have a higher stipend than programs
+      in the College of Social Sciences and Humanities. In 2023, the average computer science stipend was approximately
+       $50,000, while the average political science stipend was $10k less at approximately $40,000. </p>
+<p>However, given our data's iconsistencies due to being self-reported date to a single specific site, this trend would
+     require further examination.</p>
 <h3>Health Plan Benefits</h3>
 <p>While most health plans cover most things people would require, there are three benefits that are commonly excluded:</p>
 <ul>
@@ -70,12 +218,29 @@
 <li>Only MIT offers dental coverage as part of the primary plan. Tufts and Harvard offer optional dental plans.</li>
 <li>Eyeglasses are only covered by the MIT and Tufts health plans.&nbsp;</li>
 </ul>
-<p>Overall, it does seem like Northeastern's health insurance is competitive with other area universities, though it lacks in the three areas listed above. Some of the plan pricing does rely on being in Blue Cross Blue Shield's network, which might mean certain specialty care areas aren't easily accessible in-network.</p>
-<p>Notably, the Tufts plan details that we were able to find are unclear about how much the plan covers. There are no listed co-pay or deductible amounts.</p>
+<p>Overall, it does seem like Northeastern's health insurance is competitive with other area universities, though
+     it lacks in the three areas listed above. Some of the plan pricing does rely on being in Blue Cross Blue Shield's 
+     network, which might mean certain specialty care areas aren't easily accessible in-network.</p>
+<p>Notably, the Tufts plan details that we were able to find are unclear about how much the plan covers. There are no 
+    listed co-pay or deductible amounts.</p>
 <h3>Timeline</h3>
-<p>When we first conceived of the timeline, we expected that bargaining and employment-related articles would have the most back-and-forth changes. For the most part this was correct, but one of the most surprisingly contentious issues was that of professional development (which we grouped under "Benefits"). This particular article was changed 8 times overall, alternating between the union and the university, before ending in its final form of offering up to $750 reimbursement per year for paid professional development opportunities with supervisor approval. Some of the other most back-and-forth article changes are for employment records, appointments and reappointments (both under "Employment (Requirements)", travel (under "Employment (Rights)", and the labor management committee (under "Union (General)").</p>
-<p>Additionally, there are some articles that get introduced but never acknowledged or changed by the other party, particularly for certain benefits that the union proposed like tax assistance, retirement, relocation assistance, and housing support.&nbsp;</p>
+<p>When we first conceived of the timeline, we expected that bargaining and employment-related articles would have the
+     most back-and-forth changes. For the most part this was correct, but one of the most surprisingly contentious 
+     issues was that of professional development (which we grouped under "Benefits"). This particular article was 
+     changed 8 times overall, alternating between the union and the university, before ending in its final form of 
+     offering up to $750 reimbursement per year for paid professional development opportunities with supervisor approval. 
+     Some of the other most back-and-forth article changes are for employment records, appointments and reappointments 
+     (both under "Employment (Requirements)"), travel (under "Employment (Rights)"), and the labor management committee (under "Union (General)").</p>
+<p>Additionally, there are some articles that get introduced but never acknowledged or changed by the other party, 
+    particularly for certain benefits that the union proposed like tax assistance, retirement, relocation assistance, and housing support.&nbsp;</p>
 <h2>Conclusion</h2>
-<p>Following legal negotiations as a non-expert is a challenge, and we hope that our project helps bridge the gap for the average graduate student at Northeastern and helps them understand what this contract would mean for them.</p>
-<p>In future work, we would like to add some more visualizations for other sections, as well as pull in data for comparable non-Boston universities. In particular, we would like to gather information from our target audience on what they would want to see next, and reach out to other graduate student worker unions for copies of their contracts to compare. One of the people we did usability tests on asked about visa benefits for international students, and what different area universities offered in terms of visa support.</p>
-<p>We also would want to try and use our benefit unit chart design for other types of benefits offered, like time off (vacation, sick, and leave of absence) or housing/relocation assistance. This particularly was a design we liked and would want to iterate on in future works.</p>
+<p>Following legal negotiations as a non-expert is a challenge, and we hope that our project helps bridge the gap for the average 
+    graduate student at Northeastern and helps them understand what this contract would mean for them.</p>
+<p>In future work, we would like to add some more visualizations for other sections, as well as pull in data for comparable 
+    non-Boston universities. In particular, we would like to gather information from our target audience on what they would
+     want to see next, and reach out to other graduate student worker unions for copies of their contracts to compare. One of 
+     the people we did usability tests on asked about visa benefits for international students, and what different area universities 
+     offered in terms of visa support.</p>
+<p>We also would want to try and use our benefit unit chart design for other types of benefits offered, like time off (vacation, 
+    sick, and leave of absence) or housing/relocation assistance. 
+    This particularly was a design we liked and would want to iterate on in future works.</p>

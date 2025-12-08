@@ -128,7 +128,7 @@ def timeline_data():
     change_values = negotiations[["Article", "Change Count"]].groupby("Article").max().to_dict()['Change Count']
     
     negotiations["Change Value"] = negotiations.apply(
-        lambda x: max(float(x["Change Count"]/change_values[x["Article"]]) - 0.15, 0.1), axis=1
+        lambda x: (float(x["Change Count"]/change_values[x["Article"]]) - 0.2)/(0.85 - 0.2), axis=1
     )
     
     def color_change(party, value):

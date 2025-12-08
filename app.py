@@ -493,4 +493,4 @@ def toggle_jump_modal(jump_clicks, close_clicks, jump_to_clicks, is_open):
 # ----------------------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

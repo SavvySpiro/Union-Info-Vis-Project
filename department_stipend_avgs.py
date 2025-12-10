@@ -171,7 +171,7 @@ def department_stipend_avgs():
             neu_stipends_time.add_hline(
                 y=15650, 
                 line_dash="dash", 
-                annotation_text="Massachusetts Poverty Line: $15,650", 
+                annotation_text="Federal Poverty Line: $15,650", 
                 line=dict(color="#A2A2A2")
             )
             

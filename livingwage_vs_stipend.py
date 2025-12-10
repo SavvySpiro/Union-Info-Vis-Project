@@ -95,7 +95,7 @@ def livingwage_vs_stipend():
         font=dict(color="#248f24")
     )
 
-    stipends_over_time.add_hline(y=15650, line_dash="dash", annotation_text="Masschusetts Poverty Line: $15,650", line=dict(color="#A2A2A2"))
+    stipends_over_time.add_hline(y=15650, line_dash="dash", annotation_text="Federal Poverty Line: $15,650", line=dict(color="#A2A2A2"))
 
     stipends_over_time.update_layout(
         plot_bgcolor = "rgba(0, 4, 255, 0.02)"
